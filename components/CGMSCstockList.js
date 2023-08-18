@@ -50,7 +50,7 @@ const ProductList = () => {
     //     />
     //   )}
     // </View>
-  );
+  )
 };
 
 const styles = StyleSheet.create({
