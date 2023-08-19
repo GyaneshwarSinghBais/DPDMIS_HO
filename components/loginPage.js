@@ -46,7 +46,8 @@ const LoginPage = ({ navigation }) => {
         // Store the user in AsyncStorage
         const user = { email, password };
         await AsyncStorage.setItem('authenticated', 'true');
-        navigation.replace('FacilityHome'); // Replace login screen with the main screen
+        navigation.replace('App'); // Replace login screen with the main screen
+        navigation.navigate('FacilityHome');
         alert("Success Login REact");
       } else {
         alert("Login failed");

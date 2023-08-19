@@ -3,7 +3,7 @@ import {  View } from 'react-native';
 //import Test from './components/test';
 // import TodoList from './components/todoList';
 // import PostList from './components/postList';
-// import FacilityHome from './components/facilityHome';
+ //import MyDrawer from './components/facilityHome';
 
 //import InsertPosts from './components/insertPosts';
 //import PutPosts from './components/putPosts';
@@ -26,11 +26,13 @@ const [authenticated, setAuthenticated] = useState(false);
 
   return (
     <NavigationContainer>
-      authenticated ?
-    (<MyDrawer /> ):
+      {authenticated ?
+    (<MyDrawer /> ):(
     <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginPage}   />
-        </Stack.Navigator>        
+          <Stack.Screen name="FacilityHome" component={MyDrawer}   />
+        </Stack.Navigator>  
+    )}      
   </NavigationContainer>
 
     // <View style={{ flex: 1, paddingTop: 50 }}>
