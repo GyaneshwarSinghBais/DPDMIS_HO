@@ -3,12 +3,14 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 //import FacilityHome from "./facilityHome";
 import NavigationConfig from "../NavigationConfig";
-
+import { setUser } from "./app/userSlice";
+import { useDispatch } from "react-redux"; // Import the useDispatch hook
 
 
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch(); // Initialize the useDispatch hook
 
   useEffect(() => {
     // Get the user from AsyncStorage
@@ -41,16 +43,23 @@ const LoginPage = ({ navigation }) => {
         }),
       });
 
-      console.log(response);
+     
+    const responseData = await response.json(); // Parse the JSON response
+    alert(JSON.stringify(responseData.userInfo)); // Access userInfo from responseData
+    console.log(responseData); // Log the whole response data
+
+
       if (response.status === 200) {
         // Store the user in AsyncStorage
         const user = { email, password };
         await AsyncStorage.setItem('authenticated', 'true');
-        navigation.replace('App'); // Replace login screen with the main screen
+       // navigation.replace('App'); // Replace login screen with the main screen       
+      //  dispatch(setUser(responseData.userInfo.firstname));
+      dispatch(setUser(responseData.userInfo));
         navigation.navigate('FacilityHome');
         alert("Success Login REact");
       } else {
-        alert("Login failed");
+        alert("The id or password you have entered  does not match any account.");
       }
     } catch (error) {
       console.error("Login error:", error);

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import TableComponent from './tableComponent';
 import {
@@ -11,9 +12,16 @@ import {
 import NavigationConfig from '../NavigationConfig';
 
 function Feed({ navigation }) {
+  const informaitonAboutUser = useSelector((state) => state.user);
+
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Feed Screen</Text>
+      <Text>{informaitonAboutUser.firstname}</Text>
+      <Text>{informaitonAboutUser.userid}</Text>
+      <Text>{informaitonAboutUser.emailid}</Text>
+      <Text>{informaitonAboutUser.pwd}</Text>
+      <Text>{informaitonAboutUser.usertype}</Text>
+      <Text>{informaitonAboutUser.districtid}</Text>
       <Button title="Open drawer" onPress={() => navigation.openDrawer()} />
       <Button title="Toggle drawer" onPress={() => navigation.toggleDrawer()} />     
     </View>

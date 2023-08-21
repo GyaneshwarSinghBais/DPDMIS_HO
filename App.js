@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {  View } from 'react-native';
+import { Provider } from 'react-redux';
 //import Test from './components/test';
 // import TodoList from './components/todoList';
 // import PostList from './components/postList';
@@ -17,6 +17,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MyDrawer } from './components/facilityHome';
 import LoginPage from './components/loginPage';
+import store from './components/app/store';
+
 //import NavigationConfig from './NavigationConfig';
 
 const Stack = createStackNavigator();
@@ -25,6 +27,7 @@ const App = () => {
 const [authenticated, setAuthenticated] = useState(false);
 
   return (
+    <Provider store={store}>
     <NavigationContainer>
       {authenticated ?
     (<MyDrawer /> ):(
@@ -34,6 +37,7 @@ const [authenticated, setAuthenticated] = useState(false);
         </Stack.Navigator>  
     )}      
   </NavigationContainer>
+  </Provider>
 
     // <View style={{ flex: 1, paddingTop: 50 }}>
       
