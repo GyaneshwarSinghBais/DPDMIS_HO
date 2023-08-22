@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-
 import TableComponent from './tableComponent';
 import {
   createDrawerNavigator,
@@ -9,22 +8,50 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import NavigationConfig from '../NavigationConfig';
+//import NavigationConfig from '../NavigationConfig';
+import StockReportFacility from './stockReportFacility';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>{informaitonAboutUser.firstname}</Text>
-      <Text>{informaitonAboutUser.userid}</Text>
-      <Text>{informaitonAboutUser.emailid}</Text>
-      <Text>{informaitonAboutUser.pwd}</Text>
-      <Text>{informaitonAboutUser.usertype}</Text>
-      <Text>{informaitonAboutUser.districtid}</Text>
-      <Button title="Open drawer" onPress={() => navigation.openDrawer()} />
-      <Button title="Toggle drawer" onPress={() => navigation.toggleDrawer()} />     
+   
+
+    <View style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#ffffff',
+    }}>
+      <Text style={{
+        fontFamily: 'Roboto',
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#800000',
+      }}>
+        Welcome, {informaitonAboutUser.firstname}!
+      </Text>
+      <Text style={{
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        marginTop: 10,
+        color: '#800080',
+      }}>
+         {informaitonAboutUser.emailid}
+      </Text>
     </View>
+
+    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    //   <Text>{informaitonAboutUser.firstname}</Text>
+    //   <Text>{informaitonAboutUser.userid}</Text>
+    //   <Text>{informaitonAboutUser.emailid}</Text>
+    //   <Text>{informaitonAboutUser.pwd}</Text>
+    //   <Text>{informaitonAboutUser.usertype}</Text>
+    //   <Text>{informaitonAboutUser.districtid}</Text>
+    //   <Text>{informaitonAboutUser.facilityid}</Text>
+    //   <Button title="Open drawer" onPress={() => navigation.openDrawer()} />
+    //   <Button title="Toggle drawer" onPress={() => navigation.toggleDrawer()} />     
+    // </View>
   );
 }
 
@@ -60,9 +87,10 @@ export function MyDrawer() {
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Feed" component={Feed} />
-      <Drawer.Screen name="Notifications" component={Notifications} />
-      <Drawer.Screen name="Drug List" component={TableComponent} />
+      <Drawer.Screen name="Home" component={Feed} />
+      {/* <Drawer.Screen name="Notifications" component={Notifications} /> */}
+      <Drawer.Screen name="Warehouse Stock" component={TableComponent} />
+      <Drawer.Screen name="Current Stock" component={StockReportFacility} />
     </Drawer.Navigator>
   );
 }
@@ -75,3 +103,5 @@ export function MyDrawer() {
 //     </NavigationContainer>
 //   );
 // }
+
+

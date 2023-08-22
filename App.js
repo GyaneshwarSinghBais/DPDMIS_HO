@@ -31,9 +31,9 @@ const [authenticated, setAuthenticated] = useState(false);
     <NavigationContainer>
       {authenticated ?
     (<MyDrawer /> ):(
-    <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginPage}   />
-          <Stack.Screen name="FacilityHome" component={MyDrawer}   />
+    <Stack.Navigator >
+          <Stack.Screen name="Login" component={LoginPage}  options={{ headerShown: false }} />
+          <Stack.Screen name="FacilityHome" component={MyDrawer}  options={{ headerShown: false }} />
         </Stack.Navigator>  
     )}      
   </NavigationContainer>

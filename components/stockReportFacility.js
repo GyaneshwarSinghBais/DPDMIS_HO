@@ -1,65 +1,89 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
-const TableComponent = () => {
+const StockReportFacility = () => {
+  const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
-  const [id, setId] = useState('');
+  const [id, setId] = useState(informaitonAboutUser.facilityid);
+  
+    
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock?id=${id}`);
+    //   const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock?id=${id}`);
+   
+    
+    const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock/stockReport?faclityId=${id}`);
       setData(response.data);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
+  useEffect(() => {
+    
+        fetchData();
+  },[]
+
+  );
+
   const renderItem = ({ item, index }) => (
     <View
-      style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow]}
+      style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow, styles.rowWithBorder]}
     >
+      {/* <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.categoryName}</Text>
+      </View> */}
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.itemcode}</Text>
+        <Text style={styles.cellText}>{item.itemCode}</Text>
       </View>
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemName}</Text>
       </View>
+      {/* <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.itemtypename}</Text>
+      </View> */}
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.sku}</Text>
+        <Text style={styles.cellText}>{item.strength1}</Text>
       </View>
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.readyForIssue}</Text>
       </View>
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.pending}</Text>
+      {/* <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.facilityId}</Text>
       </View>
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.warehousename}</Text>
+        <Text style={styles.cellText}>{item.itemId}</Text>
       </View>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.categoryId}</Text>
+      </View> */}
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
+      {/* <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Enter Code/Item Name"
+          placeholder="Enter ID"
           onChangeText={text => setId(text)}
           value={id}
         />
         <TouchableOpacity style={styles.button} onPress={fetchData}>
-          <Text style={styles.buttonText}>Show</Text>
+          <Text style={styles.buttonText}>Fetch Data</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Item Code</Text>
-        <Text style={styles.headerText}>Item Name</Text>
-        <Text style={styles.headerText}>SKU</Text>
-        <Text style={styles.headerText}>Ready For Issue</Text>
-        <Text style={styles.headerText}>Pending</Text>
-        <Text style={styles.headerText}>Warehouse Name</Text>
+      </View> */}
+      <View style={styles.header}>       
+        <Text style={styles.headerText}>Code</Text>
+        <Text style={styles.headerText}>Item</Text>        
+        <Text style={styles.headerText}>Strength</Text>
+        <Text style={styles.headerText}>Stock</Text>
+        {/* <Text style={styles.headerText}>facilityId</Text>
+        <Text style={styles.headerText}>itemId</Text>
+        <Text style={styles.headerText}>categoryId</Text> */}
       </View>
       <FlatList
         data={data}
@@ -80,24 +104,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  button: {
-    marginLeft: 10,
-    padding: 10,
-    backgroundColor: '#3377FF',
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
   },
   header: {
     flexDirection: 'row',
@@ -134,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TableComponent;
+export default StockReportFacility;

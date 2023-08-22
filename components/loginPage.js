@@ -32,7 +32,7 @@ const LoginPage = ({ navigation }) => {
 
   const onLogin = async () => {
     try {
-      const response = await fetch("https://localhost:7247/api/Login", {
+      const response = await fetch("http://140.238.246.250:8080/api/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,8 +45,8 @@ const LoginPage = ({ navigation }) => {
 
      
     const responseData = await response.json(); // Parse the JSON response
-    alert(JSON.stringify(responseData.userInfo)); // Access userInfo from responseData
-    console.log(responseData); // Log the whole response data
+    //alert(JSON.stringify(responseData.userInfo)); // Access userInfo from responseData
+   
 
 
       if (response.status === 200) {
@@ -57,7 +57,7 @@ const LoginPage = ({ navigation }) => {
       //  dispatch(setUser(responseData.userInfo.firstname));
       dispatch(setUser(responseData.userInfo));
         navigation.navigate('FacilityHome');
-        alert("Success Login REact");
+        //alert("Success Login REact");
       } else {
         alert("The id or password you have entered  does not match any account.");
       }
