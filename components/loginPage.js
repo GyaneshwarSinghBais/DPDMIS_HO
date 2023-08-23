@@ -1,75 +1,81 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
-//import FacilityHome from "./facilityHome";
-import NavigationConfig from "../NavigationConfig";
 import { setUser } from "./app/userSlice";
 import { useDispatch } from "react-redux"; // Import the useDispatch hook
+import { loginUser } from "./Services/apiService";
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("chcbadekilepal@dpdmis.in");
+  const [password, setPassword] = useState("Cgmsc#123$");
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch(); // Initialize the useDispatch hook
 
-  useEffect(() => {
-    // Get the user from AsyncStorage
-    const getUser = async () => {
-      try {
-        const userJSON = await AsyncStorage.getItem("user");
-        if (userJSON !== null) {
-          const user = JSON.parse(userJSON);
-          setEmail(user.email);
-          setPassword(user.password);
-        }
-      } catch (error) {
-        console.error("Error retrieving user:", error);
-      }
-    };
+  // useEffect(() => {
+  //   // Get the user from AsyncStorage
+  //   const getUser = async () => {
+  //     try {
+  //       const userJSON = await AsyncStorage.getItem("user");
+  //       if (userJSON !== null) {
+  //         const user = JSON.parse(userJSON);
+  //         setEmail(user.email);
+  //         setPassword(user.password);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error retrieving user:", error);
+  //     }
+  //   };
+  //   getUser();
+  // }, []);
 
-    getUser();
-  }, []);
+  // const onLogin = async () => {
+  //   try {
+  //     const response = await fetch("http://140.238.246.250:8080/api/Login", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         emailid: email,
+  //         pwd: password,
+  //       }),
+  //     });
 
+ 
   const onLogin = async () => {
+
+    if(!email.trim() || !password.trim()){
+      setErrorMessage("Please provide both email and password.");
+      return;
+    }
+
     try {
-      const response = await fetch("http://140.238.246.250:8080/api/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emailid: email,
-          pwd: password,
-        }),
-      });
-
-     
-    const responseData = await response.json(); // Parse the JSON response
-    //alert(JSON.stringify(responseData.userInfo)); // Access userInfo from responseData
-   
-
-
-      if (response.status === 200) {
-        // Store the user in AsyncStorage
-        const user = { email, password };
-        await AsyncStorage.setItem('authenticated', 'true');
-       // navigation.replace('App'); // Replace login screen with the main screen       
-      //  dispatch(setUser(responseData.userInfo.firstname));
-      dispatch(setUser(responseData.userInfo));
-        navigation.navigate('FacilityHome');
-        //alert("Success Login REact");
-      } else {
-        alert("The id or password you have entered  does not match any account.");
-      }
+      // Perform login and fetch user info
+      const userInfo = await loginUser(email, password);
+  
+      // Store the user in AsyncStorage
+      await AsyncStorage.setItem("authenticated", "true");
+      dispatch(setUser(userInfo));
+      navigation.navigate("FacilityHome");
     } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login");
+      // console.error("Login error:", error);
+      // console.log(error); // Add this line to inspect the error object
+      if (error.response != "" && error.response.status === 400) {
+        setErrorMessage("Invalid email or password. Please check your credentials.");
+      } else {
+        setErrorMessage("An error occurred during login. Please try again later.");
+      }
     }
   };
+
+
+  
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
+      {errorMessage!=="" && <Text style={styles.errorText}>{errorMessage}</Text>}
       <TextInput
         placeholder="Email"
         value={email}
@@ -118,6 +124,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 10,
   },
+  errorText:{
+    color:"red",
+    marginTop:10,
+    textAlign:"center",
+  }
 });
 
 export default LoginPage;

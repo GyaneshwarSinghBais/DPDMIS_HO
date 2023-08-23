@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import axios from 'axios';
+import { fetchWarehouseStockReport } from './Services/apiService';
+import { useSelector } from 'react-redux';
 
 const TableComponent = () => {
+  const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState('');
+  const [facid, setFacid] = useState(informaitonAboutUser.facilityid);
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock?id=${id}`);
-      setData(response.data);
+      //const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock?id=${id}`);
+      const response = await fetchWarehouseStockReport(id,facid);
+      setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -34,9 +38,9 @@ const TableComponent = () => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.pending}</Text>
       </View>
-      <View style={styles.cell}>
+      {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.warehousename}</Text>
-      </View>
+      </View> */}
     </View>
   );
 
@@ -54,12 +58,12 @@ const TableComponent = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Item Code</Text>
-        <Text style={styles.headerText}>Item Name</Text>
+        <Text style={styles.headerText}>Code</Text>
+        <Text style={styles.headerText}>Item</Text>
         <Text style={styles.headerText}>SKU</Text>
-        <Text style={styles.headerText}>Ready For Issue</Text>
-        <Text style={styles.headerText}>Pending</Text>
-        <Text style={styles.headerText}>Warehouse Name</Text>
+        <Text style={styles.headerText}>Ready Stock</Text>
+        <Text style={styles.headerText}>UQC Stock</Text>
+        {/* <Text style={styles.headerText}>Warehouse Name</Text> */}
       </View>
       <FlatList
         data={data}

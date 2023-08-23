@@ -18,6 +18,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { MyDrawer } from './components/facilityHome';
 import LoginPage from './components/loginPage';
 import store from './components/app/store';
+import { Logout } from './components/logout';
 
 //import NavigationConfig from './NavigationConfig';
 
@@ -34,6 +35,7 @@ const [authenticated, setAuthenticated] = useState(false);
     <Stack.Navigator >
           <Stack.Screen name="Login" component={LoginPage}  options={{ headerShown: false }} />
           <Stack.Screen name="FacilityHome" component={MyDrawer}  options={{ headerShown: false }} />
+          <Stack.Screen name="Logout" component={Logout}  options={{ headerShown: false }} />
         </Stack.Navigator>  
     )}      
   </NavigationContainer>

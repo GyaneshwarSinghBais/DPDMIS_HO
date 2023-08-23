@@ -10,6 +10,7 @@ import {
 } from '@react-navigation/drawer';
 //import NavigationConfig from '../NavigationConfig';
 import StockReportFacility from './stockReportFacility';
+import { Logout } from './logout';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -91,6 +92,7 @@ export function MyDrawer() {
       {/* <Drawer.Screen name="Notifications" component={Notifications} /> */}
       <Drawer.Screen name="Warehouse Stock" component={TableComponent} />
       <Drawer.Screen name="Current Stock" component={StockReportFacility} />
+      <Drawer.Screen name="Logout" component={Logout} />
     </Drawer.Navigator>
   );
 }

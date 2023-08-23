@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { fetchStockReport } from './Services/apiService';
 
 const StockReportFacility = () => {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -11,23 +11,19 @@ const StockReportFacility = () => {
     
 
   const fetchData = async () => {
-    try {
-    //   const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock?id=${id}`);
-   
-    
-    const response = await axios.get(`http://140.238.246.250:8080/api/CGMSCStock/stockReport?faclityId=${id}`);
-      setData(response.data);
+    try {     
+    const stockReportData = await fetchStockReport(id);    
+    setData(stockReportData);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  useEffect(() => {
-    
+  useEffect(() => {    
         fetchData();
   },[]
-
   );
+
 
   const renderItem = ({ item, index }) => (
     <View
@@ -64,26 +60,12 @@ const StockReportFacility = () => {
   );
 
   return (
-    <View style={styles.container}>
-      {/* <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter ID"
-          onChangeText={text => setId(text)}
-          value={id}
-        />
-        <TouchableOpacity style={styles.button} onPress={fetchData}>
-          <Text style={styles.buttonText}>Fetch Data</Text>
-        </TouchableOpacity>
-      </View> */}
+    <View style={styles.container}>     
       <View style={styles.header}>       
         <Text style={styles.headerText}>Code</Text>
         <Text style={styles.headerText}>Item</Text>        
         <Text style={styles.headerText}>Strength</Text>
-        <Text style={styles.headerText}>Stock</Text>
-        {/* <Text style={styles.headerText}>facilityId</Text>
-        <Text style={styles.headerText}>itemId</Text>
-        <Text style={styles.headerText}>categoryId</Text> */}
+        <Text style={styles.headerText}>Stock</Text>      
       </View>
       <FlatList
         data={data}
