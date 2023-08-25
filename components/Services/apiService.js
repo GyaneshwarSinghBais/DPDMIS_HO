@@ -27,23 +27,44 @@ export const loginUser = async (email, password) => {
 
 export const fetchStockReport = async (facilityId) => {
   try {
-    const response = await api.get(`/CGMSCStock/stockReport?faclityId=${facilityId}`);   
+    const response = await api.get(`/CGMSCStock/stockReport?faclityId=${facilityId}`);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchWarehouseStockReport = async (searchKeyword,facilityid) => {
+export const fetchWarehouseStockReport = async (searchKeyword, facilityid) => {
   try {
-    const response = await api.get(`/CGMSCStock/concernWhStock?id=${searchKeyword}&facid=${facilityid}`);   
-    console.log(response.data);
+    const response = await api.get(`/CGMSCStock/concernWhStock?id=${searchKeyword}&facid=${facilityid}`);
+    //console.log(response.data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
+
+export const fetchIncompleteWardIssue = async (facilityid) => {
+  try {
+    const response = await api.get(`/CGMSCStock/getIncompleteWardIssue?faclityId=${facilityid}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchWardIssueItems = async (facilityid) => {
+  try {
+    const response = await api.get(`/CGMSCStock/getWardIssueItems?faclityId=23345`);
+    alert(response.data);
+    console(response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 // You can define more API functions here
 // export const fetchOtherData = async () => { ... };

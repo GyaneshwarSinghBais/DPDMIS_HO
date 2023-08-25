@@ -42,10 +42,10 @@ const LoginPage = ({ navigation }) => {
   //       }),
   //     });
 
- 
+
   const onLogin = async () => {
 
-    if(!email.trim() || !password.trim()){
+    if (!email.trim() || !password.trim()) {
       setErrorMessage("Please provide both email and password.");
       return;
     }
@@ -53,7 +53,7 @@ const LoginPage = ({ navigation }) => {
     try {
       // Perform login and fetch user info
       const userInfo = await loginUser(email, password);
-  
+
       // Store the user in AsyncStorage
       await AsyncStorage.setItem("authenticated", "true");
       dispatch(setUser(userInfo));
@@ -70,12 +70,12 @@ const LoginPage = ({ navigation }) => {
   };
 
 
-  
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      {errorMessage!=="" && <Text style={styles.errorText}>{errorMessage}</Text>}
+      {errorMessage !== "" && <Text style={styles.errorText}>{errorMessage}</Text>}
       <TextInput
         placeholder="Email"
         value={email}
@@ -124,10 +124,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 10,
   },
-  errorText:{
-    color:"red",
-    marginTop:10,
-    textAlign:"center",
+  errorText: {
+    color: "red",
+    marginTop: 10,
+    textAlign: "center",
   }
 });
 
