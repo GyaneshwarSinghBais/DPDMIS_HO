@@ -57,9 +57,20 @@ export const fetchIncompleteWardIssue = async (facilityid) => {
 
 export const fetchWardIssueItems = async (facilityid) => {
   try {
-    const response = await api.get(`/CGMSCStock/getWardIssueItems?faclityId=23345`);
-    alert(response.data);
-    console(response.data);
+    const response = await api.get(`/CGMSCStock/getWardIssueItems?faclityId=${facilityid}`);
+    //alert(JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchItemStock = async (facilityid, itemId) => {
+  try {
+    const response = await api.get(`/CGMSCStock/getItemStock?faclityId=${facilityid}&itemid=${itemId}`);
+    alert(JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     throw error;
