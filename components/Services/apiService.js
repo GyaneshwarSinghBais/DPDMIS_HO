@@ -69,7 +69,7 @@ export const fetchWardIssueItems = async (facilityid) => {
 export const fetchItemStock = async (facilityid, itemId) => {
   try {
     const response = await api.get(`/CGMSCStock/getItemStock?faclityId=${facilityid}&itemid=${itemId}`);
-    alert(JSON.stringify(response.data));
+    //alert(JSON.stringify(response.data));
     //console(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
