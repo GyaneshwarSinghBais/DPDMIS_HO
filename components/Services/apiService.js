@@ -3,8 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  //baseURL: "http://140.238.246.250:8080/api", // Your API's base URL
-  baseURL: "https://localhost:7247/api", // Your API's base URL
+  baseURL: "http://140.238.246.250:8080/api", // Your API's base URL
+  //baseURL: "https://localhost:7247/api", // Your API's base URL
 });
 
 export const loginUser = async (email, password) => {
@@ -55,9 +55,9 @@ export const fetchIncompleteWardIssue = async (facilityid) => {
 };
 
 
-export const fetchWardIssueItems = async (facilityid) => {
+export const fetchWardIssueItems = async (facilityid,issueid) => {
   try {
-    const response = await api.get(`/CGMSCStock/getWardIssueItems?faclityId=${facilityid}`);
+    const response = await api.get(`/CGMSCStock/getWardIssueItems?faclityId=${facilityid}&issueId=${issueid}`);
     //alert(JSON.stringify(response.data));
     //console(JSON.stringify(response.data));
     return response.data;
@@ -76,6 +76,64 @@ export const fetchItemStock = async (facilityid, itemId) => {
     throw error;
   }
 };
+
+
+export const postWardIssue = async (issueData,facid) => {
+  try {
+    alert(facid);
+    const response = await api.post(`/CGMSCStock/postWardIssue?facid=${facid}`, issueData);
+
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to post ward issue");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchIncompleteWardIssueItems = async (issueId) => {
+  try {
+    const response = await api.get(`/CGMSCStock/getIncompleteWardIssueItems?issueId=${issueId}`);
+    //alert(JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const deleteIncompleteIssueItems = async (issueItemId) => {
+  try {
+    alert("before" + issueItemId)
+    const response = await api.delete(`/CGMSCStock/deleteIncompleteIssueItems?IssueItemID=${issueItemId}`);
+    alert("after : " + JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchFacilityWards = async (facilityId) => {
+  try {
+   
+    const response = await api.get(`/CGMSCStock/getFacilityWards?faclityId=${facilityId}`);
+    //alert(JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
 
 // You can define more API functions here
 // export const fetchOtherData = async () => { ... };

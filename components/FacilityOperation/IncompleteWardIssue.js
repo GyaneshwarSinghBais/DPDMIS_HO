@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList,ScrollView  } from 'react-native';
 import { useSelector } from 'react-redux';
 import { fetchIncompleteWardIssue } from '../Services/apiService';
 import StockReportFacility from '../stockReportFacility';
 import NewWardIssue from './NewWardIssue';
+import { TouchableOpacity } from 'react-native';
 
 
 const IncompleteWardIssue = ({ navigation }) => {
@@ -42,13 +43,13 @@ const IncompleteWardIssue = ({ navigation }) => {
         <Text style={styles.cellText}>{item.wardName}</Text>
       </View>
 
-      <View style={styles.cell}>
+      {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.wRequestBy}</Text>
       </View>
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.wRequestDate}</Text>
-      </View>
+      </View> */}
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.issueDate}</Text>
@@ -78,13 +79,27 @@ const navigateFunction = (item) => {
     navigation.navigate('Add New Issue', { item: item, });
 }
 
+const navigationFunctionForAdd = () => {
+   navigation.navigate('AddWardIssueMaster');
+}
+
+
   return (
-    <View style={styles.container}>     
+    
+   
+    <View style={styles.container}>    
+
+<View style={{width:200,alignSelf:'center',padding:10}}>
+<TouchableOpacity style={styles.button} onPress={navigationFunctionForAdd}>
+          <Text style={styles.buttonText}>Add New Issuance</Text>
+        </TouchableOpacity>
+        </View>
+
       <View style={styles.header}>   
       <Text style={styles.headerText}>S.No</Text>    
         <Text style={styles.headerText}>Ward</Text>
-        <Text style={styles.headerText}>Request By</Text>        
-        <Text style={styles.headerText}>Request Date</Text>
+        {/* <Text style={styles.headerText}>Request By</Text>        
+        <Text style={styles.headerText}>Request Date</Text> */}
         <Text style={styles.headerText}>Issue Date</Text>      
         <Text style={styles.headerText}>Issue No</Text> 
         <Text style={styles.headerText}>Status</Text> 
@@ -95,6 +110,7 @@ const navigateFunction = (item) => {
         renderItem={renderItem}
       />
     </View>
+    
   );
 };
 
@@ -138,9 +154,23 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     alignItems: 'center',
+    borderRightWidth: 1,
+    borderRightColor: '#CCCCCC',
+    padding:5,
   },
   cellText: {
-    fontSize: 14,
+    fontSize: 11,
+  },
+  button: {
+    marginLeft: 10,
+    padding: 10,
+    backgroundColor: '#3377FF',
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    alignSelf: 'center',
   },
 });
 

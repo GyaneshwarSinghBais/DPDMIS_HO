@@ -13,6 +13,7 @@ import StockReportFacility from './stockReportFacility';
 import { Logout } from './logout';
 import IncompleteWardIssue from './FacilityOperation/IncompleteWardIssue';
 import NewWardIssue from './FacilityOperation/NewWardIssue';
+import AddWardIssueMaster from './FacilityOperation/AddWardIssueMaster';
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
 
@@ -94,6 +95,11 @@ export function MyDrawer() {
       <Drawer.Screen name="Warehouse Stock" component={TableComponent} />
       <Drawer.Screen name="Current Stock" component={StockReportFacility} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
+
+      
+      <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster}  options={{
+                  drawerItemStyle: { display: 'none' }
+        }}  />
       <Drawer.Screen name="Add New Issue" component={NewWardIssue} options={{
                   drawerItemStyle: { display: 'none' }
         }} />
