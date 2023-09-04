@@ -3,16 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Button, Platform, TextInput, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { fetchFacilityWards } from '../Services/apiService';
+import { fetchFacilityWards, postWardIssueMaster } from '../Services/apiService';
 //import DatePicker from 'react-native-date-picker'
 // import { DatePicker } from 'native-base'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { StatusBar } from 'expo-status-bar';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const AddWardIssueMaster = () => {
+const AddWardIssueMaster = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
+  const [issueInfoData, setIssueInfoData] = useState([]);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
@@ -46,31 +47,55 @@ const AddWardIssueMaster = () => {
     setMode(currentMode);
   }
 
-  const generateIssueNo = (val) => {
-  
-    if(value == 0 || value == null)
-    {
+  const generateIssueNo = async (val) => {
+
+    if (value == 0 || value == null) {
       alert("Please Select Ward Name")
       return;
     }
 
-    if(requestedDate  == "")
-    {
+    if (requestedDate == "") {
       alert("Please Enter Issue Date")
       return;
     }
 
-    if(requestedBy == "")
-    {
+    if (requestedBy == "") {
       alert("Please Enter Requested By")
       return;
     }
+    // const strIssueno = fetchFacilityIssueNo(id);
+    // setissValue(strIssueno);
+    // alert("Issueno "+ strIssueno);
+    try {
+      const WIssueMaster = {
+        issueid: 0, // It's auto-generated
+        facilityid: id, // Value from route params
+        issueno: "123",
+        issuedate: "02-Sep-2023", // Stock quantity
+        issueddate: "02-Sep-2023",
+        wrequestdate: "02-Sep-2023",
+        wrequestby: requestedBy, // Allotted quantity (same as issueQty)
+        isuseapp: 'Y',
+        issuetype: "NO", // Issue quantity
+        wardid: value,
+      };
 
-    //generate code
-     
-    alert("successfully generated")
+
+      const RetIssueID = await postWardIssueMaster(WIssueMaster, id);   
+      setIssueInfoData(RetIssueID);  
+
+    }
+    catch (error) {
+      console.error("Error posting issue:", error);
+    }
+
+    //generate code & call postWardIssno
+
+    // alert("successfully generated")
 
   }
+
+
 
   const fetchfacWardsForDropDown = async () => {
     try {
@@ -85,15 +110,28 @@ const AddWardIssueMaster = () => {
     fetchfacWardsForDropDown();
   }, []);
 
+  // useEffect(() => {
+  //   alert("after hooked: " + issueInfoData);
+  //   if(issueInfoData != "")
+  //   {   alert("after hooked: " + issueInfoData[0].result.value);
+  //     navigation.navigate('Add New Issue', { item: issueInfoData[0].result.value});
+  //   }   
+  // }, [issueInfoData]);
+
+  useEffect(() => {
+    if (issueInfoData && issueInfoData.result && issueInfoData.result.value) {
+      const dataToPass = issueInfoData.result.value[0];
+      navigation.navigate('Add New Issue', { item: dataToPass });
+    }
+  }, [issueInfoData]);
 
 
 
 
 
   return (
-    <>
+    <>   
       <SafeAreaView style={styles.container}>
-
         <View style={styles.card}>
           <Text style={styles.cardHeader}>Generate New Issue</Text>
           <View style={{ zIndex: 1000 }} >
@@ -168,9 +206,9 @@ const AddWardIssueMaster = () => {
           </View>
           <View>
             <View style={styles.cell}>
-            <TouchableOpacity style={styles.button} onPress={() => generateIssueNo(id)}>
-    <Text style={styles.buttonTextGenrate}>Generate</Text>
-  </TouchableOpacity>            
+              <TouchableOpacity style={styles.button} onPress={() => generateIssueNo(id)}>
+                <Text style={styles.buttonTextGenrate}>Generate</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -212,7 +250,7 @@ const AddWardIssueMaster = () => {
           Date: {this.state.chosenDate.toString().substr(4, 12)}
         </Text> */}
 
-        
+
 
         {/* <View style={{ margin: 20 }}>
           <Button title='TimePicker' onPress={() => showMOde('time')} />
@@ -272,9 +310,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     borderRadius: 5,
     padding: 10,
-    width:200,
-    alignSelf:'center',
-    marginTop:20
+    width: 200,
+    alignSelf: 'center',
+    marginTop: 20
   },
   buttonText: {
     color: 'white',
@@ -286,7 +324,7 @@ const styles = StyleSheet.create({
   buttonTextGenrate: {
     color: 'white',
     fontWeight: 'bold',
-    alignSelf:'center'
+    alignSelf: 'center'
   },
 });
 

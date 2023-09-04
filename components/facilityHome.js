@@ -8,12 +8,18 @@ import {
   DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
+
 //import NavigationConfig from '../NavigationConfig';
 import StockReportFacility from './stockReportFacility';
+
 import { Logout } from './logout';
 import IncompleteWardIssue from './FacilityOperation/IncompleteWardIssue';
 import NewWardIssue from './FacilityOperation/NewWardIssue';
 import AddWardIssueMaster from './FacilityOperation/AddWardIssueMaster';
+import HoldStockRPT from './StockRPT/HoldStockRPT';
+import NearExpStockRPT from './StockRPT/StockNearExp';
+import IncompleteT4Indent from './FacilityOperation/IncompleteT4Indent';
+
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
 
@@ -94,8 +100,10 @@ export function MyDrawer() {
       {/* <Drawer.Screen name="Notifications" component={Notifications} /> */}
       <Drawer.Screen name="Warehouse Stock" component={TableComponent} />
       <Drawer.Screen name="Current Stock" component={StockReportFacility} />
+      <Drawer.Screen name="Hold Stock" component={HoldStockRPT} />
+      <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
-
+      <Drawer.Screen name="Ward Issue against Indent" component={IncompleteT4Indent} />
       
       <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster}  options={{
                   drawerItemStyle: { display: 'none' }

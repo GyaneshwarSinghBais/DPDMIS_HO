@@ -3,8 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://140.238.246.250:8080/api", // Your API's base URL
-  //baseURL: "https://localhost:7247/api", // Your API's base URL
+  // baseURL: "http://140.238.246.250:8080/api", // Your API's base URL
+  baseURL: "https://localhost:7247/api", // Your API's base URL
 });
 
 export const loginUser = async (email, password) => {
@@ -94,6 +94,25 @@ export const postWardIssue = async (issueData,facid) => {
 };
 
 
+
+export const postWardIssueMaster = async (issueData,facid) => {
+  try {
+   alert(facid);
+    const response = await api.post(`/CGMSCStock/postIssueNo?facid=${facid}`, issueData);
+    alert("Status ke pehle wala : "+ JSON.stringify(response.data));
+    alert(response.status);
+    if (response.status === 200) {
+      alert("Status wala : "+ JSON.stringify(response.data));
+      return response.data;
+    } else {
+      throw new Error("Failed to post ward issue");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const fetchIncompleteWardIssueItems = async (issueId) => {
   try {
     const response = await api.get(`/CGMSCStock/getIncompleteWardIssueItems?issueId=${issueId}`);
@@ -132,6 +151,64 @@ export const fetchFacilityWards = async (facilityId) => {
 };
 
 
+export const fetchFacilityIssueNo = async (facilityId) => {
+  try {
+   
+    const response = await api.get(`/CGMSCStock/getGeneratedIssueNo?facId=${facilityId}`);
+    alert(JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchHoldStockReport = async (facilityId) => {
+  try {
+     
+    const response = await api.get(`/CGMSCStock/getHoldStock?faclityId=${facilityId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+
+};
+
+export const fetchNearExpStockReport = async (facilityId,catid,criteria) => {
+  try {
+
+    const response = await api.get(`/CGMSCStock/getNearExpStock?faclityId=${facilityId}&catid=${catid}&criteria=${criteria}`);
+    //alert(response.data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+  
+};
+
+export const fetchCategory = async (facilityId) => {
+  try {
+     
+    const response = await api.get(`/CGMSCStock/getItemCategory?faclityId=${facilityId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+
+};
+
+
+export const fetchIncomplWardIndentMaster = async (facilityId) => {
+  try {
+     
+    const response = await api.get(`/CGMSCStock/getIncomplWardIndentMaster?faclityId=${facilityId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+
+};
 
 
 

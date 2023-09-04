@@ -192,7 +192,8 @@ const NewWardIssue = (props) => {
       if (myReminder == 0) {
 
 
-        if (parsedQty <= stockQty) {
+        if (parsedQty <= stockQty) 
+        {
           try {
             const issueData = {
               issueitemid: 0, // It's auto-generated
@@ -208,7 +209,8 @@ const NewWardIssue = (props) => {
             getIncompleteWardIssueItems();           
             setIssueQty(null);
             alert("Successfull Issued "+ parsedQty + " Quantity");
-          } catch (error) {
+          }
+           catch (error) {
             console.error("Error posting issue:", error);
           }
         }
