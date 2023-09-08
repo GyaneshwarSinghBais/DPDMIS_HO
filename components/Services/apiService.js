@@ -3,8 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://140.238.246.250:8080/api", // Your API's base URL
-   // baseURL: "https://localhost:7247/api", // Your API's base URL
+  baseURL: "http://140.238.246.250:8080/api", // Server URL
+  //baseURL: "https://localhost:7247/api", // Development URL
 });
 
 export const loginUser = async (email, password) => {
@@ -227,10 +227,9 @@ export const fetchIncomplReceiptMasterWH = async (facilityId) => {
 
 
 export const postIssueNoAgainstIndent = async (issueMasterData) => {
-  alert("inside apiServices: "+ JSON.stringify(issueMasterData));
+  alert("inside apiServices: " + JSON.stringify(issueMasterData));
   try {
-    alert("api Services.js fn called");
-    const response = await api.post(`/CGMSCStock/postIssueNoAgainstIndent`,issueMasterData);
+    const response = await api.post(`/CGMSCStock/postIssueNoAgainstIndent`, issueMasterData);
     alert(JSON.stringify(response.data));
     return response.data;
   } catch (error) {

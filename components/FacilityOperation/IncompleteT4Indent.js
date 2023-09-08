@@ -16,6 +16,7 @@ const IncompleteT4Indent = ({ navigation }) => {
   const [issueDate, setissueDate] = useState('');
   const [returnDataFrompostIssueNoAgainstIndent, setreturnDataFrompostIssueNoAgainstIndent] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
+  const [seletedRowNocId, setSeletedRowNocId] = useState('');
 
 
   const [visible, setVisible] = React.useState(false);
@@ -27,14 +28,16 @@ const IncompleteT4Indent = ({ navigation }) => {
   const [show, setShow] = useState(false);
   //const [dateText, setDateText] = useState('Empty');
 
+  const [text, setText] = React.useState("");
+
 
   const issueData = {
     issueid: 0,
     facilityid: id,
-    issueno: "123",
-    issuedate: issueDate,
-    issueddate: issueDate,
-    indentid: 0
+    //issueno: "123",
+    issuedate: text,
+    issueddate: text,
+    indentid: seletedRowNocId
   };
 
   const onChange = (event, selectedDate) => {
@@ -44,11 +47,11 @@ const IncompleteT4Indent = ({ navigation }) => {
 
     let tempDate = new Date(currentDate);
 
-    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-     let datetosend = tempDate.getDate() + '-' + monthNames[tempDate.getMonth()] + '-' + tempDate.getFullYear();
-     alert(datetosend);
-     setissueDate(datetosend);
+    // var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    //   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    //  let datetosend = tempDate.getDate() + '-' + monthNames[tempDate.getMonth()] + '-' + tempDate.getFullYear();
+    //  alert(datetosend);
+    //  setissueDate(datetosend);
 
     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
     //let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
@@ -71,7 +74,7 @@ const IncompleteT4Indent = ({ navigation }) => {
     margin: 20, // Add margin to the modal
   };
 
-  const [text, setText] = React.useState("");
+  
 
 
 
@@ -157,6 +160,7 @@ const IncompleteT4Indent = ({ navigation }) => {
     //if issue no already genrated then navigate... else ... genrate issue no and take issue data then navigate
     if (item.issueid == "" || item.issueid == null) {
       //alert("Issue id is null for IndentId " + item.nocid);
+      setSeletedRowNocId(item.nocid);
       setVisible(true);
       //Ask Issue Date and generate IssueID then..
       //navigate  and show only indented items in ddl and not more than indented qty
