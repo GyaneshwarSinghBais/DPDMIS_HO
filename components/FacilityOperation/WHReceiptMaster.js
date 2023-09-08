@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchIncomplWardIndentMaster, postIssueNoAgainstIndent } from '../Services/apiService';
+import { fetchIncomplReceiptMasterWH } from '../Services/apiService';
 import { TouchableOpacity } from 'react-native';
 import { Modal, Portal, Button, PaperProvider, TextInput } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -10,11 +10,9 @@ import Toast from 'react-native-root-toast';
 
 
 
-const IncompleteT4Indent = ({ navigation }) => {
+const WHReceiptMaster = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
-  const [issueDate, setissueDate] = useState('');
-  const [returnDataFrompostIssueNoAgainstIndent, setreturnDataFrompostIssueNoAgainstIndent] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
 
 
@@ -27,29 +25,13 @@ const IncompleteT4Indent = ({ navigation }) => {
   const [show, setShow] = useState(false);
   //const [dateText, setDateText] = useState('Empty');
 
-
-  const issueData = {
-    issueid: 0,
-    facilityid: id,
-    issueno: "123",
-    issuedate: issueDate,
-    issueddate: issueDate,
-    indentid: 0
-  };
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
-
+   
     let tempDate = new Date(currentDate);
-
-    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-     let datetosend = tempDate.getDate() + '-' + monthNames[tempDate.getMonth()] + '-' + tempDate.getFullYear();
-     alert(datetosend);
-     setissueDate(datetosend);
-
+   
     let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
     //let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
     //setText(fDate + '\n' + fTime);
@@ -78,17 +60,9 @@ const IncompleteT4Indent = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
-      const stockReportData = await fetchIncomplWardIndentMaster(id);
+      const stockReportData = await fetchIncomplReceiptMasterWH(id);
+    
       setData(stockReportData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const postIssueNo = async () => {
-    try {     
-      const returnData = await postIssueNoAgainstIndent(issueData);
-      setreturnDataFrompostIssueNoAgainstIndent(returnData);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -110,7 +84,7 @@ const IncompleteT4Indent = ({ navigation }) => {
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.wardname}</Text>
+        <Text style={styles.cellText}>{item.reqdate}</Text>
       </View>
 
       {/* <View style={styles.cell}>
@@ -118,33 +92,39 @@ const IncompleteT4Indent = ({ navigation }) => {
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.windentno}</Text>
+        <Text style={styles.cellText}>{item.whissueno}</Text>
       </View>
       
        <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issuedt}</Text>
+        <Text style={styles.cellText}>{item.whissuedt}</Text>
       </View>
 
        <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issueno}</Text>
+        <Text style={styles.cellText}>{item.INDENTID}</Text>
       </View>
       */}
+         <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.nositemsreq}/{item.nositemsissued}</Text>
+      </View>
+
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.requesteddate}</Text>
+        <Text style={styles.cellText}>{item.whissuedt}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.nos}</Text>
+        <Text style={styles.cellText}>{item.facreceiptdate}</Text>
       </View>
 
+
+   
 
       {/* <View style={styles.cell}>
         <Text onPress={()=>alert(item.issueID)} style={styles.cellText}>{item.status}</Text>
       </View> */}
 
       <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.dstatus}</Text>
+        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.rstatus}</Text>
       </View>
 
     </View>
@@ -154,15 +134,20 @@ const IncompleteT4Indent = ({ navigation }) => {
 
   const navigateFunction = (item) => {
     //navigation.navigate('Add New Issue', { item: item, });
-    //if issue no already genrated then navigate... else ... genrate issue no and take issue data then navigate
-    if (item.issueid == "" || item.issueid == null) {
+    //if issue no already genrated then nave ... genrate issue no and take issue data then navigate
+    if (item.facreceiptid == "" || item.facreceiptid == null && item.indentid != null) {
       //alert("Issue id is null for IndentId " + item.nocid);
       setVisible(true);
       //Ask Issue Date and generate IssueID then..
       //navigate  and show only indented items in ddl and not more than indented qty
     }
+    else if (item.facreceiptid == "" || item.facreceiptid == null && (item.indentid==""||item.indentid == null))
+    {
+        alert("Not Issued by Warehouse, You can Receipt after Warehouse Issuance" )
+    }
+    
     else {
-      alert("Issue id = " + item.issueid + " and  IndentId " + item.nocid)
+      alert("facreceiptid = " + item.facreceiptid + " and  IndentId " + item.indentid)
       //navigate directly and show only indented items in ddl and not more than indented qty
     }
 
@@ -174,14 +159,16 @@ const IncompleteT4Indent = ({ navigation }) => {
 
 
   const issueDateSaveAndGenerate = () => {
-    if (text == '' || text == null) {
-      let toast = Toast.show('Please Enter Issue Date.', {
+    if(text == '' || text == null)
+    {
+      let toast = Toast.show('Please Enter Receipt Date.', {
         duration: Toast.durations.LONG,
       });
       return;
-    }  
-    postIssueNo();
-
+    }
+    
+    alert("Button Pressed");
+   
   }
 
 
@@ -191,18 +178,15 @@ const IncompleteT4Indent = ({ navigation }) => {
         <Portal>
           <View style={styles.container}>
 
-            <View style={{ width: 200, alignSelf: 'center', padding: 10 }}>
-              <TouchableOpacity style={styles.button} onPress={navigationFunctionForAdd}>
-                <Text style={styles.buttonText}>Add New Issuance</Text>
-              </TouchableOpacity>
-            </View>
+         
 
             <View style={styles.header}>
-              <Text style={styles.headerText}>S.No</Text>
-              <Text style={styles.headerText}>Ward</Text>
-              <Text style={styles.headerText}>Indent Date</Text>
-              <Text style={styles.headerText}>Indented Items</Text>
-              <Text style={styles.headerText}>Status</Text>
+              <Text style={styles.headerText}>SN</Text>
+              <Text style={styles.headerText}>Indented DT</Text>
+              <Text style={styles.headerText}>Indented/Issued</Text>
+              <Text style={styles.headerText}>WH Issued DT</Text>
+              <Text style={styles.headerText}>Received DT</Text>
+              <Text style={styles.headerText}>Rec. Status</Text>
             </View>
             <FlatList
               data={data}
@@ -213,11 +197,11 @@ const IncompleteT4Indent = ({ navigation }) => {
 
 
           <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-            <Text style={styles.modalHeaderText}>Issue Date:</Text>
-            <View style={{ flexDirection: "row" }}>
-              <View style={{ width: '85%', }}>
+            <Text style={styles.modalHeaderText}>Receipt Date:</Text>
+            <View style={{flexDirection:"row" }}>
+              <View style={{width:'85%',}}> 
                 <TextInput
-                  label="Issue Date"
+                  label="Receipt Date"
                   value={text}
                   onChangeText={text => setText(text)}
                   style={styles.input} // Add styling to the input text
@@ -226,7 +210,7 @@ const IncompleteT4Indent = ({ navigation }) => {
               <View>
                 <TouchableOpacity style={styles.iconContainer} onPress={() => showMOde('date')}>
                   <Text style={styles.iconContainer} onPress={() => showMOde('date')}>
-                    <Icon name="calendar" size={30} color="purple" />
+                    <Icon name="calendar" size={30} color="purple"/>
                   </Text>
                 </TouchableOpacity>
 
@@ -245,7 +229,7 @@ const IncompleteT4Indent = ({ navigation }) => {
               mode="contained"
               onPress={() => issueDateSaveAndGenerate()}
             >
-              Save
+              Genenate
             </Button>
           </Modal>
 
@@ -336,4 +320,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default IncompleteT4Indent;
+export default WHReceiptMaster;

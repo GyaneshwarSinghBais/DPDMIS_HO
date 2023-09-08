@@ -23,6 +23,11 @@ const TableComponent = () => {
     <View
       style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow]}
     >
+
+<View style={styles.cell}>
+        <Text style={styles.cellText}>{index + 1}</Text>
+      </View>
+
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemcode}</Text>
       </View>
@@ -58,6 +63,7 @@ const TableComponent = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
+      <Text style={styles.headerText}>SN</Text>  
         <Text style={styles.headerText}>Code</Text>
         <Text style={styles.headerText}>Item</Text>
         <Text style={styles.headerText}>SKU</Text>

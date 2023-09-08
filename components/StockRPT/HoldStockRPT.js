@@ -31,6 +31,11 @@ const HoldStockRPT = () => {
       {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.categoryName}</Text>
       </View> */}
+
+<View style={styles.cell}>
+        <Text style={styles.cellText}>{index+1}</Text>
+      </View>
+
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemcode}</Text>
       </View>
@@ -67,7 +72,8 @@ const HoldStockRPT = () => {
 
   return (
     <View style={styles.container}>     
-      <View style={styles.header}>       
+      <View style={styles.header}>   
+      <Text style={styles.headerText}>SNo</Text>    
         <Text style={styles.headerText}>Code</Text>
         <Text style={styles.headerText}>Item</Text>        
         <Text style={styles.headerText}>Strength</Text>

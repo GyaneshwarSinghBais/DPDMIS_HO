@@ -20,18 +20,24 @@ import HoldStockRPT from './StockRPT/HoldStockRPT';
 import NearExpStockRPT from './StockRPT/StockNearExp';
 import IncompleteT4Indent from './FacilityOperation/IncompleteT4Indent';
 
+import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
+
+import { useTheme } from 'react-native-paper';
+
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
-
+  const theme = useTheme();
+  
   return (
    
 
-    <View style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#ffffff',
-    }}>
+    // <View style={{
+    //   flex: 1,
+    //   justifyContent: 'center',
+    //   alignItems: 'center',
+    //   backgroundColor: '#ffffff',
+    // }}>
+    <View style={{ backgroundColor: theme.colors.primary }}>
       <Text style={{
         fontFamily: 'Roboto',
         fontSize: 20,
@@ -104,6 +110,7 @@ export function MyDrawer() {
       <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
       <Drawer.Screen name="Ward Issue against Indent" component={IncompleteT4Indent} />
+      <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />
       
       <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster}  options={{
                   drawerItemStyle: { display: 'none' }

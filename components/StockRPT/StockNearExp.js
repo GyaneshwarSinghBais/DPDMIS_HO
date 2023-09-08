@@ -13,7 +13,8 @@ const NearExpStockRPT = () => {
     const [data, setData] = useState([]);
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
-
+    const [ddlValue, setvalueddl] = useState(null);
+    const [ddlitem, setitemddl] = useState(null);
     const [id, setId] = useState(informaitonAboutUser.facilityid);
 
     
@@ -29,7 +30,20 @@ const NearExpStockRPT = () => {
     }
   };
 
+  // function App() {
+  //   const [value,setValue]=useState('');
+  //   const handleSelect=(e)=>{
+  //     console.log(e);
+  //     setValue(MyEXPDDL.value);
+
+  //     alert("Please Category"+e)
+  //   }
   const ShowExpData = (val) => {
+
+    // setvalueddl={setValue}
+    // setItems={setData}
+  
+ 
   
     if(value == 0 || value == null)
     {
