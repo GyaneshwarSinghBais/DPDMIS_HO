@@ -23,13 +23,14 @@ import IncompleteT4Indent from './FacilityOperation/IncompleteT4Indent';
 import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
 
 import { useTheme } from 'react-native-paper';
+import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
   const theme = useTheme();
-  
+
   return (
-   
+
 
     // <View style={{
     //   flex: 1,
@@ -52,7 +53,7 @@ function Feed({ navigation }) {
         marginTop: 10,
         color: '#800080',
       }}>
-         {informaitonAboutUser.emailid}
+        {informaitonAboutUser.emailid}
       </Text>
     </View>
 
@@ -84,12 +85,12 @@ function CustomDrawerContent(props) {
       <DrawerItemList {...props} />
       <DrawerItem
         label="Close drawer"
-        onPress={() => props.navigation.closeDrawer()}
+        onPress={() => props.navigation.closeDrawer()}       
       />
       <DrawerItem
         label="Toggle drawer"
-        onPress={() => props.navigation.toggleDrawer()}
-      />
+        onPress={() => props.navigation.toggleDrawer()}       
+      />      
     </DrawerContentScrollView>
   );
 }
@@ -109,15 +110,18 @@ export function MyDrawer() {
       <Drawer.Screen name="Hold Stock" component={HoldStockRPT} />
       <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
-      <Drawer.Screen name="Ward Issue against Indent" component={IncompleteT4Indent} />
+      <Drawer.Screen name="Ward Issue Against Indent" component={IncompleteT4Indent} />
       <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />
-      
-      <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster}  options={{
-                  drawerItemStyle: { display: 'none' }
-        }}  />
+
+      <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
       <Drawer.Screen name="Add New Issue" component={NewWardIssue} options={{
-                  drawerItemStyle: { display: 'none' }
-        }} />
+        drawerItemStyle: { display: 'none' }
+      }} />   
+      <Drawer.Screen name="IssueItemsAgainstIndent" component={IssueItemsAgainstIndent} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
       <Drawer.Screen name="Logout" component={Logout} />
     </Drawer.Navigator>
   );

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button } from 'react-native-paper';
-import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchItemStock, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
+import { Button, Dialog, Portal, PaperProvider } from 'react-native-paper';
+//import { ScrollView } from 'react-native-virtualized-view'
+//import { useNavigation } from '@react-navigation/native';
+import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
 
 
-const NewWardIssue = ( {navigation}) => {
+const IssueItemsAgainstIndent = ({ navigation, props }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
@@ -24,50 +26,105 @@ const NewWardIssue = ( {navigation}) => {
   //const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
   const [incompleteWardIssueItemsData, setIncompleteWardIssueItemsData] = useState([]);
 
+  const [visible, setVisible] = React.useState(true);
+
+  const hideDialog = () => setVisible(false);
+
   const route = useRoute();
-  const wardName = route.params?.item.wardname;
-  const wRequestBy = route.params?.item.wrequestby;
-  const wRequestDate = route.params?.item.wrequestdate;
-  const issueDate = route.params?.item.issuedate;
-  const issueNo = route.params?.item.issueno;
-  const issueID = route.params?.item.issueid;
+  //const navigation = useNavigation();
+
+  //Successfully run on SAVE
+  // const wardName = route.params?.item.wardName;
+  // const wRequestBy = route.params?.item.wRequestBy;
+  // const wrequestdate = route.params?.item.wrequestdate;
+  // const issueDate = route.params?.item.issueDate;
+  // const issueNo = route.params?.item.issueNo;
+  // const issueID = route.params?.item.issueID;
+  // const indentid = route.params?.item.indentid;
+
+  //Successfully run on IN
+  // const wardName = route.params?.item.wardname;
+  // const wRequestBy = route.params?.item.wrequestby;
+  // const wrequestdate = route.params?.item.wrequestdate;
+  // const issueDate = route.params?.item.issuedate;
+  // const issueNo = route.params?.item.issueno;
+  // const issueID = route.params?.item.issueid;
+  // const indentid = route.params?.item.indentid;
+
+
+
+  const WARDNAME = route.params?.item.wardname;
+  const WREQUESTBY = route.params?.item.wrequestby;
+  const wrequestdate = route.params?.item.wrequestdate;
+  const ISSUEDATE = route.params?.item.issuedate;
+  const ISSUENO = route.params?.item.issueno;
+  const ISSUEID = route.params?.item.issueid;
+  const INDENTID = route.params?.item.indentid;
 
   const handleSelect = (item) => {
     // alert("selected change");
     setSelectedItem(item);
   };
 
-  const fnComplete = async () => {
-    try {
-      
-      const response = await putCompleteWardIssues(issueID);
-      alert("Completed Sucessfully !!");
-      navigation.navigate("Ward Issue");
-    } catch (error) {
-      console.error('Error:', error);
-    }
+  const IssueQtyEvent = async () => {
+    if (issueQty !== null && !isNaN(issueQty) && issueQty !== 0) {
+      const parsedQty = Number(issueQty);
+      const stockQty = itemStockData[0].stock;
 
-  }
+      if (parsedQty > Number(itemStockData[0].indentqty)) {
+        alert("Issue quantity cannot be more than indent quantity.");
+        return;
+      }
 
-  const fnDelete = async () => {
-    try {      
-      const response = await deleteWardIssues(issueID);
-      alert("Deleted Sucessfully !!");
-       navigation.navigate("Ward Issue");    
-      //navigation.navigate.goBack();
-      //setData(response);
-    } catch (error) {
-      console.error('Error:', error);
+      // alert("issueQty"+issueQty);
+      // alert("itemStockData[0].multiple"+itemStockData[0].multiple);
+
+
+      const myReminder = (issueQty % itemStockData[0].multiple);
+
+
+      if (myReminder == 0) {
+
+
+        if (parsedQty <= stockQty) {
+          try {
+            const issueData = {
+              issueitemid: 0, // It's auto-generated
+              issueid: ISSUEID, // Value from route params
+              itemid: value, // Selected item value
+              currentstock: itemStockData[0].stock, // Stock quantity
+              allotted: parsedQty, // Allotted quantity (same as issueQty)
+              issueqty: parsedQty, // Issue quantity
+            };
+
+
+            const response = await postWardIssue(issueData, id);
+            getIncompleteWardIssueItems();
+            setIssueQty(null);
+            fetchData();
+            alert("Successfull Issued " + parsedQty + " Quantity");
+          }
+          catch (error) {
+            console.error("Error posting issue:", error);
+          }
+        }
+        else {
+          alert("Issue quantity cannot be more than stock quantity.");
+        }
+      } else {
+        alert("Enter Quantity Shoud be Multiple of" + itemStockData[0].multiple);
+      }
+    } else {
+      alert("Please Enter Valid Issue Quantity.");
+      //alert("मेरा नाम जोकर हिट मूवी  ");
     }
-    //navigation.navigate("Ward Issue Against Indent");   
-  }
+  };
 
 
   const deleteIncompIssueItems = async (isueItmId) => {
     try {
       //alert("isueItmId : "+isueItmId)
       const response = await deleteIncompleteIssueItems(isueItmId);
-      //alert(JSON.stringify(response));         
       setdeleteData(response);
       fetchData();
       getIncompleteWardIssueItems();
@@ -80,7 +137,8 @@ const NewWardIssue = ( {navigation}) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetchWardIssueItems(id, issueID);
+      //alert("Indent Id: " + INDENTID);
+      const response = await fetchIndentItems(INDENTID);
       //alert(JSON.stringify(response));         
       setData(response);
     } catch (error) {
@@ -92,12 +150,8 @@ const NewWardIssue = ( {navigation}) => {
 
   const fetchDataItemStock = async () => {
     try {
-      // alert("function called, id : " + id + "value : " + value);
-      const response = await fetchItemStock(id, value, 0);
-      //alert("response : " + JSON.stringify(response)); 
+      const response = await fetchItemStock(id, value, INDENTID);
       setItemStockData(response);
-
-      //alert("itemStockData : " + JSON.stringify(itemStockData))
     } catch (error) {
       console.error('Error:', error);
     }
@@ -105,7 +159,7 @@ const NewWardIssue = ( {navigation}) => {
 
   const getIncompleteWardIssueItems = async () => {
     try {
-      const response = await fetchIncompleteWardIssueItems(issueID);
+      const response = await fetchIncompleteWardIssueItems(ISSUEID);
 
       setIncompleteWardIssueItemsData(response);
     } catch (error) {
@@ -152,8 +206,9 @@ const NewWardIssue = ( {navigation}) => {
         <Text style={styles.cellText}>{item.locationno}</Text>
       </View>
 
-      <View style={styles.cell}>
-        <Text onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}>Delete</Text>
+      <View >
+        {/* <Text   onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}>Delete</Text> */}
+        <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => deleteIncompIssueItems(item.issueItemID)} />
       </View>
 
 
@@ -194,7 +249,7 @@ const NewWardIssue = ( {navigation}) => {
   //     </View>
 
   //     <View style={styles.cell}>
-  //       <Text style={styles.cellText}>{item.wRequestDate}</Text>
+  //       <Text style={styles.cellText}>{item.wrequestdate}</Text>
   //     </View>
 
   //     <View style={styles.cell}>
@@ -205,56 +260,40 @@ const NewWardIssue = ( {navigation}) => {
   //       <Text style={styles.cellText}>{item.issueNo}</Text>
   //     </View>
 
- 
+  const fnComplete = async () => {
+    try {
 
-  const IssueQtyEvent = async () => {
-    if (issueQty !== null && !isNaN(issueQty) && issueQty !== 0) {
-      const parsedQty = Number(issueQty);
-      const stockQty = itemStockData[0].stock;
-
-      // alert("issueQty"+issueQty);
-      // alert("itemStockData[0].multiple"+itemStockData[0].multiple);
-
-
-      const myReminder = (issueQty % itemStockData[0].multiple);
-
-
-      if (myReminder == 0) {
-
-
-        if (parsedQty <= stockQty) {
-          try {
-            const issueData = {
-              issueitemid: 0, // It's auto-generated
-              issueid: issueID, // Value from route params
-              itemid: value, // Selected item value
-              currentstock: itemStockData[0].stock, // Stock quantity
-              allotted: parsedQty, // Allotted quantity (same as issueQty)
-              issueqty: parsedQty, // Issue quantity
-            };
-
-
-            const response = await postWardIssue(issueData, id);
-            getIncompleteWardIssueItems();
-            setIssueQty(null);
-            fetchData();
-            alert("Successfull Issued " + parsedQty + " Quantity");
-          }
-          catch (error) {
-            console.error("Error posting issue:", error);
-          }
-        }
-        else {
-          alert("Issue quantity cannot be more than stock quantity.");
-        }
-      } else {
-        alert("Enter Quantity Shoud be Multiple of" + itemStockData[0].multiple);
-      }
-    } else {
-      alert("Please Enter Valid Issue Quantity.");
-      //alert("मेरा नाम जोकर हिट मूवी  ");
+      const response = await putCompleteWardIssues(ISSUEID);
+      alert("Completed Sucessfully !!");
+      navigation.navigate("Ward Issue Against Indent");
+    } catch (error) {
+      console.error('Error:', error);
     }
-  };
+
+  }
+
+  const fnDelete = async () => {
+    try {
+      const response = await deleteWardIssues(ISSUEID);
+      alert("Deleted Sucessfully !!");
+      navigation.navigate("Ward Issue Against Indent");
+      //setData(response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    //navigation.navigate("Ward Issue Against Indent");   
+  }
+
+
+
+  // const fnDeleteWardIssues = async () => {
+
+  // };
+
+
+
+
+
 
   // ... (other parts of your code)
 
@@ -265,7 +304,7 @@ const NewWardIssue = ( {navigation}) => {
 
   return (
     <>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} >
         <View style={styles.container}>
           {/* 
     <View style={styles.cardContent}>
@@ -280,24 +319,28 @@ const NewWardIssue = ( {navigation}) => {
               </View> */}
 
           <View style={styles.card}>
-            <Text style={styles.cardHeader}>Ward Issues</Text>
+            {/* <Text style={styles.cardHeader}>Ward Issues Against Indent</Text> */}
             <View style={styles.cardContent}>
               <View style={styles.cardItem}>
                 <Text style={styles.label}>Ward Name:</Text>
-                <Text style={styles.value}>{wardName}</Text>
+                <Text style={styles.value}>{WARDNAME}</Text>
               </View>
               <View style={styles.cardItem}>
                 <Text style={styles.label}>Issue Date:</Text>
-                <Text style={styles.value}>{issueDate}</Text>
+                <Text style={styles.value}>{ISSUEDATE}</Text>
               </View>
               <View style={styles.cardItem}>
                 <Text style={styles.label}>Issue No:</Text>
-                <Text style={styles.value}>{issueNo}</Text>
+                <Text style={styles.value}>{ISSUENO}</Text>
+              </View>
+              {/* <View style={styles.cardItem}>
+                <Text style={styles.label}>Issue Id:</Text>
+                <Text style={styles.value}>{ISSUEID}</Text>
               </View>
               <View style={styles.cardItem}>
-                <Text style={styles.label}>Issue Id:</Text>
-                <Text style={styles.value}>{issueID}</Text>
-              </View>
+                <Text style={styles.label}>Indent Id:</Text>
+                <Text style={styles.value}>{INDENTID}</Text>
+              </View> */}
             </View>
           </View>
 
@@ -326,7 +369,6 @@ const NewWardIssue = ( {navigation}) => {
                   if (value != null) {
                     setOldValue(value);
                     if (value != oldValue) {
-                      alert("onchangeValue Called, after it fetchDataItemStock() will be called")
                       fetchDataItemStock();
                       //incompleteWardIssueItemsData
                     }
@@ -348,15 +390,22 @@ const NewWardIssue = ( {navigation}) => {
               {/* <Text style={styles.cardHeader}>Item Issuance</Text> */}
               <View style={styles.cardContent}>
                 <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
-
-                  <Text style={styles.labelRow}>Stock Quantity: </Text>
+                  <Text style={styles.labelRow}>Indent: </Text>
+                  <Text style={styles.valueStock}>{itemStockData[0].indentqty}</Text>
+                  <Text>  |  </Text>
+                  <Text style={styles.labelRow}>Stock: </Text>
                   <Text style={styles.valueStock}>{itemStockData[0].stock}</Text>
                   <Text>  |   </Text>
                   <Text style={styles.labelRow}>Multiple:</Text>
                   <Text style={styles.valueStock}>{itemStockData[0].multiple}</Text>
-
                 </View>
-
+                {/* <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
+                  <Text style={styles.labelRow}>Indent QTY: </Text>
+                  <Text style={styles.valueStock}>{itemStockData[0].indentqty}</Text>
+                  <Text>     </Text>    
+                  <Text>     </Text>    
+                  <Text>     </Text>               
+                </View> */}
               </View>
 
               <View style={styles.inputContainer}>
@@ -405,24 +454,35 @@ const NewWardIssue = ( {navigation}) => {
               />
             </View>
           </View>
-          <View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              {/* style={styles.cardItem} */}
-              <View>
-                <Button icon="file-check" mode="contained-tonal" buttonColor="#097969" textColor="#FFFFFF" onPress={() => fnComplete()}>
-                  Complete
-                </Button>
-              </View>
-              <View>
-                <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => fnDelete()}>
-                  Delete
-                </Button>
-              </View>
-            </View>
-          </View>
+
 
         </View>
+
+        <View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            {/* style={styles.cardItem} */}
+            <View>
+              <Button icon="file-check" mode="contained-tonal" buttonColor="#097969" textColor="#FFFFFF" onPress={() => fnComplete()}>
+                Complete
+              </Button>
+            </View>
+            <View>
+              <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => fnDelete()}>
+                Delete
+              </Button>
+            </View>
+          </View>
+        </View>
       </SafeAreaView>
+
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Actions>
+            <Button onPress={() => console.log('Cancel')} style={{color:'red'}}>Cancel</Button>
+            <Button onPress={() => console.log('Ok')}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   )
 }
@@ -501,6 +561,7 @@ const styles = StyleSheet.create({
   labelRow: {
     fontWeight: 'bold',
     marginRight: 5,
+    fontSize: 12
   },
   value: {
     flex: 1,
@@ -510,7 +571,7 @@ const styles = StyleSheet.create({
   valueStock: {
     flex: 1,
     textAlign: 'right',
-    fontSize: 15,
+    fontSize: 12,
     color: '#0000FF',
   },
   selectedItem: {
@@ -524,10 +585,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#3377FF',
     borderRadius: 5,
   },
+  buttonComplete: {
+    alignSelf: 'center',
+    padding: 10,
+    backgroundColor: '#097969',
+    borderRadius: 5,
+  },
+  buttonDelete: {
+    alignSelf: 'center',
+    padding: 10,
+    backgroundColor: '#D22B2B',
+    borderRadius: 5,
+  },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
+
   buttonTextDelete: {
     color: '#FF0000',
     fontWeight: 'bold',
@@ -578,4 +652,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default NewWardIssue
+export default IssueItemsAgainstIndent

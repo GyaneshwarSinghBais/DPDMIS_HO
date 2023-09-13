@@ -66,9 +66,9 @@ export const fetchWardIssueItems = async (facilityid, issueid) => {
   }
 };
 
-export const fetchItemStock = async (facilityid, itemId) => {
+export const fetchItemStock = async (facilityid, itemId, indentid) => {
   try {
-    const response = await api.get(`/CGMSCStock/getItemStock?faclityId=${facilityid}&itemid=${itemId}`);
+    const response = await api.get(`/CGMSCStock/getItemStock?faclityId=${facilityid}&itemid=${itemId}&indentid=${indentid}`);
     //alert(JSON.stringify(response.data));
     //console(JSON.stringify(response.data));
     return response.data;
@@ -127,9 +127,9 @@ export const fetchIncompleteWardIssueItems = async (issueId) => {
 
 export const deleteIncompleteIssueItems = async (issueItemId) => {
   try {
-    alert("before" + issueItemId)
+    //alert("before" + issueItemId)
     const response = await api.delete(`/CGMSCStock/deleteIncompleteIssueItems?IssueItemID=${issueItemId}`);
-    alert("after : " + JSON.stringify(response.data));
+    //alert("after : " + JSON.stringify(response.data));
     //console(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
@@ -227,15 +227,50 @@ export const fetchIncomplReceiptMasterWH = async (facilityId) => {
 
 
 export const postIssueNoAgainstIndent = async (issueMasterData) => {
-  alert("inside apiServices: " + JSON.stringify(issueMasterData));
+ // alert("inside apiServices: " + JSON.stringify(issueMasterData));
   try {
     const response = await api.post(`/CGMSCStock/postIssueNoAgainstIndent`, issueMasterData);
-    alert(JSON.stringify(response.data));
+    //alert(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     throw error;
   }
 
+};
+
+
+
+export const fetchIndentItems = async (indentId) => {
+  try {
+    //alert("Inset fetchIndentItems:" + indentId)
+    const response = await api.get(`/CGMSCStock/getWardIndentItems?nocid=${indentId}`);
+    //alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const putCompleteWardIssues = async (issueId) => {  
+  try {
+    const response = await api.put(`/CGMSCStock/completeWardIssues?IssueID=${issueId}`);
+    alert(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const deleteWardIssues = async (issueId) => {  
+  try {
+    const response = await api.delete(`/CGMSCStock/deleteWardIssues?IssueID=${issueId}`);
+    alert(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 

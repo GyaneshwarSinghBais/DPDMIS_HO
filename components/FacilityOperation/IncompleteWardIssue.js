@@ -40,7 +40,7 @@ const IncompleteWardIssue = ({ navigation }) => {
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.wardName}</Text>
+        <Text style={styles.cellText}>{item.wardname}</Text>
       </View>
 
       {/* <View style={styles.cell}>
@@ -52,11 +52,11 @@ const IncompleteWardIssue = ({ navigation }) => {
       </View> */}
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issueDate}</Text>
+        <Text style={styles.cellText}>{item.issuedate}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issueNo}</Text>
+        <Text style={styles.cellText}>{item.issueno}</Text>
       </View>
 
       
@@ -76,7 +76,7 @@ const IncompleteWardIssue = ({ navigation }) => {
 const navigateFunction = (item) => {
     //alert(testid);
     //navigation.navigate("Add New Issue"); 
-    navigation.navigate('Add New Issue', { item: item, });
+    navigation.navigate('Add New Issue', { item: item });
 }
 
 const navigationFunctionForAdd = () => {

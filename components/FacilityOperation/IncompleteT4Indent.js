@@ -7,6 +7,7 @@ import { Modal, Portal, Button, PaperProvider, TextInput } from 'react-native-pa
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-root-toast';
+//import IssueItemsAgainstIndent from './IssueItemsAgainstIndent';
 
 
 
@@ -43,7 +44,7 @@ const IncompleteT4Indent = ({ navigation }) => {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+    //setDate(currentDate);
 
     let tempDate = new Date(currentDate);
 
@@ -53,11 +54,13 @@ const IncompleteT4Indent = ({ navigation }) => {
     //  alert(datetosend);
     //  setissueDate(datetosend);
 
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    //let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    let fDate = (tempDate.getMonth() + 1) + '/' + tempDate.getDate() + '/' + tempDate.getFullYear();
     //let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
     //setText(fDate + '\n' + fTime);
     setText(fDate);
     setRequestedDate(fDate);
+    setDate(fDate);
     //console.log(fDate + ' (' + fTime + ')')
   }
 
@@ -74,13 +77,14 @@ const IncompleteT4Indent = ({ navigation }) => {
     margin: 20, // Add margin to the modal
   };
 
-  
+
 
 
 
 
   const fetchData = async () => {
     try {
+      //alert("id value in incompleteT4Indent page: " + id);
       const stockReportData = await fetchIncomplWardIndentMaster(id);
       setData(stockReportData);
     } catch (error) {
@@ -89,7 +93,7 @@ const IncompleteT4Indent = ({ navigation }) => {
   };
 
   const postIssueNo = async () => {
-    try {     
+    try {
       const returnData = await postIssueNoAgainstIndent(issueData);
       setreturnDataFrompostIssueNoAgainstIndent(returnData);
     } catch (error) {
@@ -97,10 +101,18 @@ const IncompleteT4Indent = ({ navigation }) => {
     }
   };
 
+  // useEffect(() => {
+  //   fetchData();
+  // }, []
+  // );
+
+
   useEffect(() => {
-    fetchData();
-  }, []
-  );
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
 
   const renderItem = ({ item, index }) => (
@@ -117,10 +129,10 @@ const IncompleteT4Indent = ({ navigation }) => {
       </View>
 
       {/* <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.nocid}</Text>
-      </View>
+        <Text style={styles.cellText}>{item.indentid}</Text>
+      </View> */}
 
-      <View style={styles.cell}>
+      {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.windentno}</Text>
       </View>
       
@@ -130,11 +142,11 @@ const IncompleteT4Indent = ({ navigation }) => {
 
        <View style={styles.cell}>
         <Text style={styles.cellText}>{item.issueno}</Text>
-      </View>
-      */}
+      </View> */}
+
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.requesteddate}</Text>
+        <Text style={styles.cellText}>{item.wrequestdate}</Text>
       </View>
 
       <View style={styles.cell}>
@@ -166,7 +178,13 @@ const IncompleteT4Indent = ({ navigation }) => {
       //navigate  and show only indented items in ddl and not more than indented qty
     }
     else {
-      alert("Issue id = " + item.issueid + " and  IndentId " + item.nocid)
+    
+
+      //setVisible(false);
+      // const dataToPass = returnDataFrompostIssueNoAgainstIndent.result.value[0];
+     // alert("date to pass: " + JSON.stringify(item));
+      navigation.navigate('IssueItemsAgainstIndent', { item: item });
+
       //navigate directly and show only indented items in ddl and not more than indented qty
     }
 
@@ -183,27 +201,47 @@ const IncompleteT4Indent = ({ navigation }) => {
         duration: Toast.durations.LONG,
       });
       return;
-    }  
+    }
+
+    //date validation for not inseting future date
+
     postIssueNo();
+    // const dataToPass = returnDataFrompostIssueNoAgainstIndent.result.value[0];
+    //  alert("date to pass: " + dataToPass);
+    //navigation.navigate('IssueItemsAgainstIndent', { item: dataToPass }); 
 
   }
+
+  useEffect(() => {
+    if (returnDataFrompostIssueNoAgainstIndent.length > 0 || returnDataFrompostIssueNoAgainstIndent.length == undefined) {
+      setVisible(false);
+      const dataToPass = returnDataFrompostIssueNoAgainstIndent.result.value[0];
+      //alert("date to pass: " + JSON.stringify(dataToPass));
+      navigation.navigate('IssueItemsAgainstIndent', { item: dataToPass });
+    }
+  }, [returnDataFrompostIssueNoAgainstIndent]
+  );
 
 
   return (
     <>
+
       <PaperProvider>
         <Portal>
           <View style={styles.container}>
-
-            <View style={{ width: 200, alignSelf: 'center', padding: 10 }}>
+            {/* <View style={styles.card}>
+              <Text style={styles.cardHeader}>Ward Issues Against Indent</Text>
+            </View> */}
+            {/* <View style={{ width: 200, alignSelf: 'center', padding: 10 }}>
               <TouchableOpacity style={styles.button} onPress={navigationFunctionForAdd}>
                 <Text style={styles.buttonText}>Add New Issuance</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             <View style={styles.header}>
               <Text style={styles.headerText}>S.No</Text>
               <Text style={styles.headerText}>Ward</Text>
+              {/* <Text style={styles.headerText}>Indent Id</Text> */}
               <Text style={styles.headerText}>Indent Date</Text>
               <Text style={styles.headerText}>Indented Items</Text>
               <Text style={styles.headerText}>Status</Text>
@@ -223,8 +261,10 @@ const IncompleteT4Indent = ({ navigation }) => {
                 <TextInput
                   label="Issue Date"
                   value={text}
+                  //value="10/9/2023"
                   onChangeText={text => setText(text)}
                   style={styles.input} // Add styling to the input text
+                  disabled="true"
                 />
               </View>
               <View>
@@ -262,6 +302,7 @@ const IncompleteT4Indent = ({ navigation }) => {
     </>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -335,7 +376,19 @@ const styles = StyleSheet.create({
   iconContainer: {
     padding: 10,
   },
-
+  card: {
+    backgroundColor: '#F8F8F8',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 5,
+    marginTop: 20,
+  },
+  cardHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
 
 
 });
