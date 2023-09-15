@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchIncomplReceiptMasterWH } from '../Services/apiService';
+import { fetchIncomplReceiptMasterWH, postReceiptMaster } from '../Services/apiService';
 import { TouchableOpacity } from 'react-native';
 import { Modal, Portal, Button, PaperProvider, TextInput } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,11 +9,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-root-toast';
 
 
-
 const WHReceiptMaster = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
+  const [receiptInfoData, setReceiptInfoData] = useState([]);
 
 
   const [visible, setVisible] = React.useState(false);
@@ -29,10 +29,11 @@ const WHReceiptMaster = ({ navigation }) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
-   
+
     let tempDate = new Date(currentDate);
-   
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+
+    //let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    let fDate = (tempDate.getMonth() + 1) + '/' + tempDate.getDate() + '/' + tempDate.getFullYear();
     //let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
     //setText(fDate + '\n' + fTime);
     setText(fDate);
@@ -60,18 +61,28 @@ const WHReceiptMaster = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
+      alert("before calling grid ");
       const stockReportData = await fetchIncomplReceiptMasterWH(id);
-    
+      alert("inside fetch: " + JSON.stringify(stockReportData));
       setData(stockReportData);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     fetchData();
   }, []
   );
+
+  useEffect(() => {
+    if (receiptInfoData && receiptInfoData.result && receiptInfoData.result.value) {
+      const dataToPass = receiptInfoData.result.value[0];
+      //navigation.navigate('Add New Issue', { item: dataToPass });
+      alert("Navigation Happen");
+    }
+  }, [receiptInfoData]);
+
 
 
   const renderItem = ({ item, index }) => (
@@ -103,7 +114,7 @@ const WHReceiptMaster = ({ navigation }) => {
         <Text style={styles.cellText}>{item.INDENTID}</Text>
       </View>
       */}
-         <View style={styles.cell}>
+      <View style={styles.cell}>
         <Text style={styles.cellText}>{item.nositemsreq}/{item.nositemsissued}</Text>
       </View>
 
@@ -115,17 +126,31 @@ const WHReceiptMaster = ({ navigation }) => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.facreceiptdate}</Text>
       </View>
+      <View style={styles.cell}>
+        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.rstatus}</Text>
+      </View>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.warehouseid}</Text>
+      </View>
 
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.indentid}</Text>
+      </View>
 
-   
+      {/* <Text style={styles.headerText}>SN</Text>
+              <Text style={styles.headerText}>Indented DT</Text>
+              <Text style={styles.headerText}>Indented/Issued</Text>
+              <Text style={styles.headerText}>WH Issued DT</Text>
+              <Text style={styles.headerText}>Received DT</Text>
+              <Text style={styles.headerText}>Rec. Status</Text>
+              <Text style={styles.headerText}>Wid</Text>
+              <Text style={styles.headerText}>Indentid</Text> */}
 
       {/* <View style={styles.cell}>
         <Text onPress={()=>alert(item.issueID)} style={styles.cellText}>{item.status}</Text>
       </View> */}
 
-      <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.rstatus}</Text>
-      </View>
+
 
     </View>
 
@@ -141,11 +166,10 @@ const WHReceiptMaster = ({ navigation }) => {
       //Ask Issue Date and generate IssueID then..
       //navigate  and show only indented items in ddl and not more than indented qty
     }
-    else if (item.facreceiptid == "" || item.facreceiptid == null && (item.indentid==""||item.indentid == null))
-    {
-        alert("Not Issued by Warehouse, You can Receipt after Warehouse Issuance" )
+    else if (item.facreceiptid == "" || item.facreceiptid == null && (item.indentid == "" || item.indentid == null)) {
+      alert("Not Issued by Warehouse, You can Receipt after Warehouse Issuance")
     }
-    
+
     else {
       alert("facreceiptid = " + item.facreceiptid + " and  IndentId " + item.indentid)
       //navigate directly and show only indented items in ddl and not more than indented qty
@@ -158,17 +182,48 @@ const WHReceiptMaster = ({ navigation }) => {
   }
 
 
-  const issueDateSaveAndGenerate = () => {
-    if(text == '' || text == null)
-    {
+  const issueDateSaveAndGenerate = async () => {
+    if (text == '' || text == null) {
       let toast = Toast.show('Please Enter Receipt Date.', {
         duration: Toast.durations.LONG,
       });
       return;
     }
-    
+
     alert("Button Pressed");
-   
+
+    try {
+      const WReceiptMaster = {
+        // issueid: 0, // It's auto-generated
+        // facilityid: id, // Value from route params
+        // //issueno: "123",
+        // issuedate: text, // Stock quantity
+        // issueddate: text,
+        // wrequestdate: text,
+        // wrequestby: requestedBy, // Allotted quantity (same as issueQty)
+        // // isuseapp: 'Y',
+        // // issuetype: "NO", // Issue quantity
+        // wardid: value,
+
+        facreceiptid: 0,
+        facilityid: id,
+        // indentid: data.indentid,
+        indentid: "237516",
+        // warehouseid: data.warehouseid,
+         warehouseid: "2617",
+        facreceiptdate: text
+
+      };
+
+      
+      const returnResult = await postReceiptMaster(WReceiptMaster, id);
+      setReceiptInfoData(returnResult);
+    }
+    catch (error) {
+      console.error("Error posting issue:", error);
+    }
+
+
   }
 
 
@@ -178,7 +233,7 @@ const WHReceiptMaster = ({ navigation }) => {
         <Portal>
           <View style={styles.container}>
 
-         
+
 
             <View style={styles.header}>
               <Text style={styles.headerText}>SN</Text>
@@ -187,6 +242,8 @@ const WHReceiptMaster = ({ navigation }) => {
               <Text style={styles.headerText}>WH Issued DT</Text>
               <Text style={styles.headerText}>Received DT</Text>
               <Text style={styles.headerText}>Rec. Status</Text>
+              <Text style={styles.headerText}>Wid</Text>
+              <Text style={styles.headerText}>Indentid</Text>
             </View>
             <FlatList
               data={data}
@@ -198,19 +255,20 @@ const WHReceiptMaster = ({ navigation }) => {
 
           <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
             <Text style={styles.modalHeaderText}>Receipt Date:</Text>
-            <View style={{flexDirection:"row" }}>
-              <View style={{width:'85%',}}> 
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ width: '85%', }}>
                 <TextInput
                   label="Receipt Date"
                   value={text}
                   onChangeText={text => setText(text)}
                   style={styles.input} // Add styling to the input text
+                  disabled="true"
                 />
               </View>
               <View>
                 <TouchableOpacity style={styles.iconContainer} onPress={() => showMOde('date')}>
                   <Text style={styles.iconContainer} onPress={() => showMOde('date')}>
-                    <Icon name="calendar" size={30} color="purple"/>
+                    <Icon name="calendar" size={30} color="purple" />
                   </Text>
                 </TouchableOpacity>
 

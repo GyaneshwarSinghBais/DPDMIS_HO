@@ -20,7 +20,7 @@ import HoldStockRPT from './StockRPT/HoldStockRPT';
 import NearExpStockRPT from './StockRPT/StockNearExp';
 import IncompleteT4Indent from './FacilityOperation/IncompleteT4Indent';
 
-import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
+ import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
 
 import { useTheme } from 'react-native-paper';
 import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent';
@@ -39,16 +39,14 @@ function Feed({ navigation }) {
     //   backgroundColor: '#ffffff',
     // }}>
     <View style={{ backgroundColor: theme.colors.primary }}>
-      <Text style={{
-        fontFamily: 'Roboto',
+      <Text style={{       
         fontSize: 20,
         fontWeight: 'bold',
         color: '#800000',
       }}>
         Welcome, {informaitonAboutUser.firstname}!
       </Text>
-      <Text style={{
-        fontFamily: 'Roboto',
+      <Text style={{       
         fontSize: 16,
         marginTop: 10,
         color: '#800080',

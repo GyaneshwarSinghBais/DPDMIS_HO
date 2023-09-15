@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Button, Platform, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Button, Platform,  TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { fetchFacilityWards, postWardIssueMaster } from '../Services/apiService';
+import {  TextInput } from 'react-native-paper';
 //import DatePicker from 'react-native-date-picker'
 // import { DatePicker } from 'native-base'
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -33,7 +34,8 @@ const AddWardIssueMaster = ({ navigation }) => {
     setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    //let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' + tempDate.getFullYear();
+    let fDate = (tempDate.getMonth() + 1) + '/' + tempDate.getDate() + '/' + tempDate.getFullYear();
     //let fTime = 'Hours: ' + tempDate.getHours() + ' | Minutes: ' + tempDate.getMinutes();
     //setText(fDate + '\n' + fTime);
     setText(fDate);
@@ -63,27 +65,24 @@ const AddWardIssueMaster = ({ navigation }) => {
       alert("Please Enter Requested By")
       return;
     }
-    // const strIssueno = fetchFacilityIssueNo(id);
-    // setissValue(strIssueno);
-    // alert("Issueno "+ strIssueno);
+   
     try {
       const WIssueMaster = {
         issueid: 0, // It's auto-generated
         facilityid: id, // Value from route params
-        issueno: "123",
-        issuedate: "02-Sep-2023", // Stock quantity
-        issueddate: "02-Sep-2023",
-        wrequestdate: "02-Sep-2023",
+        //issueno: "123",
+        issuedate: text, // Stock quantity
+        issueddate: text,
+        wrequestdate: text,
         wrequestby: requestedBy, // Allotted quantity (same as issueQty)
-        isuseapp: 'Y',
-        issuetype: "NO", // Issue quantity
+        // isuseapp: 'Y',
+        // issuetype: "NO", // Issue quantity
         wardid: value,
       };
 
 
       const RetIssueID = await postWardIssueMaster(WIssueMaster, id);   
-      setIssueInfoData(RetIssueID);  
-
+      setIssueInfoData(RetIssueID);        
     }
     catch (error) {
       console.error("Error posting issue:", error);
@@ -169,7 +168,8 @@ const AddWardIssueMaster = ({ navigation }) => {
                 placeholder="dd/m/yyyy"
                 // keyboardType="numeric"
                 onChangeText={text => setRequestedDate(text)}
-                value={requestedDate}
+                value={requestedDate}  
+                disabled="true"              
               />
               <TouchableOpacity style={styles.iconContainer} onPress={() => showMOde('date')}>
                 <Text style={styles.iconContainer} onPress={() => showMOde('date')}>

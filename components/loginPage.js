@@ -7,8 +7,8 @@ import { loginUser } from "./Services/apiService";
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("chcgujradmt@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$
-  const [password, setPassword] = useState("Dinesh#180278$");
+  const [email, setEmail] = useState("uphcamasivani@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$ chcgujradmt@dpdmis.in Dinesh#180278$
+  const [password, setPassword] = useState("Cgmsc#123$"); 
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch(); // Initialize the useDispatch hook
 

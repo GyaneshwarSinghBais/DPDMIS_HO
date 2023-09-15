@@ -8,14 +8,19 @@ const api = axios.create({
 });
 
 export const loginUser = async (email, password) => {
-  try {
+  try {   
     const response = await api.post("/Login", {
       emailid: email,
       pwd: password,
     });
 
+   
+    
+
     if (response.status === 200) {
+    
       return response.data.userInfo;
+      
     } else {
       throw new Error("Login failed");
     }
@@ -79,10 +84,8 @@ export const fetchItemStock = async (facilityid, itemId, indentid) => {
 
 
 export const postWardIssue = async (issueData, facid) => {
-  try {
-    alert(facid);
+  try {  
     const response = await api.post(`/CGMSCStock/postWardIssue?facid=${facid}`, issueData);
-
     if (response.status === 200) {
       return response.data;
     } else {
@@ -97,12 +100,8 @@ export const postWardIssue = async (issueData, facid) => {
 
 export const postWardIssueMaster = async (issueData, facid) => {
   try {
-    alert(facid);
-    const response = await api.post(`/CGMSCStock/postIssueNo?facid=${facid}`, issueData);
-    alert("Status ke pehle wala : " + JSON.stringify(response.data));
-    alert(response.status);
-    if (response.status === 200) {
-      alert("Status wala : " + JSON.stringify(response.data));
+       const response = await api.post(`/CGMSCStock/postIssueNo?facid=${facid}`, issueData);   
+    if (response.status === 200) {     
       return response.data;
     } else {
       throw new Error("Failed to post ward issue");
@@ -254,8 +253,7 @@ export const fetchIndentItems = async (indentId) => {
 
 export const putCompleteWardIssues = async (issueId) => {  
   try {
-    const response = await api.put(`/CGMSCStock/completeWardIssues?IssueID=${issueId}`);
-    alert(JSON.stringify(response.data));
+    const response = await api.put(`/CGMSCStock/completeWardIssues?IssueID=${issueId}`);   
     return response.data;
   } catch (error) {
     throw error;
@@ -265,9 +263,25 @@ export const putCompleteWardIssues = async (issueId) => {
 
 export const deleteWardIssues = async (issueId) => {  
   try {
-    const response = await api.delete(`/CGMSCStock/deleteWardIssues?IssueID=${issueId}`);
-    alert(JSON.stringify(response.data));
+    const response = await api.delete(`/CGMSCStock/deleteWardIssues?IssueID=${issueId}`);   
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const postReceiptMaster = async (receiptData, facid) => {
+  alert(JSON.stringify(receiptData));
+  console.log(JSON.stringify(receiptData));
+  try {  
+    const response = await api.post(`/CGMSCStock/postReceiptMaster?facid=${facid}`, receiptData);
+    alert(JSON.stringify(response.data));
+    if (response.status === 200) {      
+      return response.data;
+    } else {
+      throw new Error("Failed to post ward issue");
+    }
   } catch (error) {
     throw error;
   }

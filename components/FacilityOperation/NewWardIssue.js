@@ -294,10 +294,10 @@ const NewWardIssue = ( {navigation}) => {
                 <Text style={styles.label}>Issue No:</Text>
                 <Text style={styles.value}>{issueNo}</Text>
               </View>
-              <View style={styles.cardItem}>
+              {/* <View style={styles.cardItem}>
                 <Text style={styles.label}>Issue Id:</Text>
                 <Text style={styles.value}>{issueID}</Text>
-              </View>
+              </View> */}
             </View>
           </View>
 

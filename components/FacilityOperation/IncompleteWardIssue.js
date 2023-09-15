@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList,ScrollView  } from 'react-native';
+import { View, Text, StyleSheet, FlatList,ScrollView,SafeAreaView,RefreshControl} from 'react-native';
 import { useSelector } from 'react-redux';
 import { fetchIncompleteWardIssue } from '../Services/apiService';
 import StockReportFacility from '../stockReportFacility';
@@ -7,7 +7,9 @@ import NewWardIssue from './NewWardIssue';
 import { TouchableOpacity } from 'react-native';
 
 
+
 const IncompleteWardIssue = ({ navigation }) => {
+  const [refreshing, setRefreshing] = React.useState(false);
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
@@ -23,11 +25,22 @@ const IncompleteWardIssue = ({ navigation }) => {
       console.error('Error:', error);
     }
   };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+    setTimeout(() => {
+      setRefreshing(false);     
+    }, 2000);
+  }, []);
 
   useEffect(() => {    
         fetchData();
   },[]
   );
+
+  const unsubscribe = navigation.addListener('focus', () => {
+    fetchData();
+ });
 
 
   const renderItem = ({ item, index }) => (
@@ -86,7 +99,13 @@ const navigationFunctionForAdd = () => {
 
   return (
     
-   
+    <SafeAreaView style={styles.container1}>
+    {/* <ScrollView
+      contentContainerStyle={styles.scrollView1}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }> */}
+
     <View style={styles.container}>    
 
 <View style={{width:200,alignSelf:'center',padding:10}}>
@@ -108,9 +127,13 @@ const navigationFunctionForAdd = () => {
         data={data}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
-    
+    {/* </ScrollView> */}
+    </SafeAreaView>
   );
 };
 
@@ -172,6 +195,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
   },
+  container1: {
+    flex: 1,
+  },
+  scrollView1: {
+    flex: 1,
+    backgroundColor: 'pink',
+
+    justifyContent: 'center',
+  },
+  
 });
 
 export default IncompleteWardIssue;

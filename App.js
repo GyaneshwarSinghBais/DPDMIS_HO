@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MD3LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import { RootSiblingParent } from 'react-native-root-siblings';
@@ -21,6 +21,12 @@ import LoginPage from './components/loginPage';
 import store from './components/app/store';
 import { Logout } from './components/logout';
 
+// import * as Font from 'expo-font';
+// import { Ionicons } from '@expo/vector-icons';
+
+
+
+
 //import NavigationConfig from './NavigationConfig';
 
 const theme = {
@@ -37,7 +43,25 @@ const Stack = createStackNavigator();
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
 
+  // const componentDidMount= async ()=> {
+  //   await Font.loadAsync({
+  //      Roboto: require('native-base/Fonts/Roboto.ttf'),
+  //      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+  //      ...Ionicons.font,
+  //   });
+  //   this.setState({ isReady: true });
+  // }
+
+  // useEffect(()=>{
+  //   componentDidMount();
+  // });
+
+
+ 
+
   return (
+   
+  
     <Provider store={store}>
       <PaperProvider theme={theme} >
       <RootSiblingParent>
@@ -54,6 +78,8 @@ const App = () => {
         </RootSiblingParent>
       </PaperProvider>
     </Provider>
+
+   
 
     // <View style={{ flex: 1, paddingTop: 50 }}>
 
