@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import { setUser } from "./app/userSlice";
 import { useDispatch } from "react-redux"; // Import the useDispatch hook
 import { loginUser } from "./Services/apiService";
+import { TextInput, Button } from 'react-native-paper';
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("uphcamasivani@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$ chcgujradmt@dpdmis.in Dinesh#180278$
-  const [password, setPassword] = useState("Cgmsc#123$"); 
+  const [email, setEmail] = useState("chcbadekilepal@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$
+  const [password, setPassword] = useState("Cgmsc#123$");
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false); 
   const dispatch = useDispatch(); // Initialize the useDispatch hook
+
 
   // useEffect(() => {
   //   // Get the user from AsyncStorage
@@ -51,6 +54,8 @@ const LoginPage = ({ navigation }) => {
     }
 
     try {
+
+      setLoading(true);
       // Perform login and fetch user info
       const userInfo = await loginUser(email, password);
 
@@ -61,11 +66,13 @@ const LoginPage = ({ navigation }) => {
     } catch (error) {
       // console.error("Login error:", error);
       // console.log(error); // Add this line to inspect the error object
-      if (error.response != "" && error.response.status === 400) {
+      if (error.response  && error.response.status === 400) {
         setErrorMessage("Invalid email or password. Please check your credentials.");
       } else {
         setErrorMessage("An error occurred during login. Please try again later.");
       }
+    }finally {
+      setLoading(false); 
     }
   };
 
@@ -73,62 +80,84 @@ const LoginPage = ({ navigation }) => {
 
 
   return (
+
+    <ImageBackground source={require("./assets/background.jpg")}
+      style={styles.backgroundImage}
+    >
+
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       {errorMessage !== "" && <Text style={styles.errorText}>{errorMessage}</Text>}
+      {/* <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      /> */}
       <TextInput
+        mode="outlined"
+        label="Email"
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
       />
+
       <TextInput
+        mode="outlined"
+        label="Password"
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry={true}
         style={styles.input}
       />
-      <Button
-        title="Login"
+
+<Button
+        mode="contained"
+        buttonColor="#728FCE"
+        textColor="#FFFFFF"
+        labelStyle={styles.buttonLabel}
         onPress={onLogin}
-        style={styles.button}
-      />
+        loading={loading}
+      >
+        Login
+      </Button>
     </View>
+
+    </ImageBackground>  
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage:{
+      flex: 1,
+      resizeMode: "cover",
+      justifyContent: "center",
+  },
   container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 20,
   },
   input: {
-    width: 200,
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
+    width: "100%",
+    marginBottom: 20,
   },
-  button: {
-    backgroundColor: "#007aff",
-    color: "#fff",
-    width: 200,
-    height: 40,
-    borderRadius: 5,
-    margin: 10,
+  buttonLabel: {
+    color: "#FFFFFF",
   },
   errorText: {
     color: "red",
     marginTop: 10,
     textAlign: "center",
-  }
+  },
 });
 
 export default LoginPage;
