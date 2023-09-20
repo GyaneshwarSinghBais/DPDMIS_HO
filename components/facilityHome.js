@@ -20,10 +20,12 @@ import HoldStockRPT from './StockRPT/HoldStockRPT';
 import NearExpStockRPT from './StockRPT/StockNearExp';
 import IncompleteT4Indent from './FacilityOperation/IncompleteT4Indent';
 
- import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
+import WHReceiptMaster from './FacilityOperation/WHReceiptMaster';
 
 import { useTheme } from 'react-native-paper';
 import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent';
+import WHReceiptItems from './FacilityOperation/WHReceiptItems';
+import WelcomeView from './WelcomeView';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -38,22 +40,8 @@ function Feed({ navigation }) {
     //   alignItems: 'center',
     //   backgroundColor: '#ffffff',
     // }}>
-    <View style={{ backgroundColor: theme.colors.primary }}>
-      <Text style={{       
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#800000',
-      }}>
-        Welcome, {informaitonAboutUser.firstname}!
-      </Text>
-      <Text style={{       
-        fontSize: 16,
-        marginTop: 10,
-        color: '#800080',
-      }}>
-        {informaitonAboutUser.emailid}
-      </Text>
-    </View>
+
+    <WelcomeView />
 
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     //   <Text>{informaitonAboutUser.firstname}</Text>
@@ -83,12 +71,12 @@ function CustomDrawerContent(props) {
       <DrawerItemList {...props} />
       <DrawerItem
         label="Close drawer"
-        onPress={() => props.navigation.closeDrawer()}       
+        onPress={() => props.navigation.closeDrawer()}
       />
       <DrawerItem
         label="Toggle drawer"
-        onPress={() => props.navigation.toggleDrawer()}       
-      />      
+        onPress={() => props.navigation.toggleDrawer()}
+      />
     </DrawerContentScrollView>
   );
 }
@@ -116,14 +104,20 @@ export function MyDrawer() {
       }} />
       <Drawer.Screen name="Add New Issue" component={NewWardIssue} options={{
         drawerItemStyle: { display: 'none' }
-      }} />   
+      }} />
       <Drawer.Screen name="IssueItemsAgainstIndent" component={IssueItemsAgainstIndent} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
+      <Drawer.Screen name="Add New Receipt" component={WHReceiptItems} options={{
         drawerItemStyle: { display: 'none' }
       }} />
       <Drawer.Screen name="Logout" component={Logout} />
     </Drawer.Navigator>
   );
 }
+
+
+
 
 
 // export default function FacilityHome() {

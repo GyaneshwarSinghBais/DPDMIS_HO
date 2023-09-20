@@ -1,32 +1,46 @@
-import { View, Text, StyleSheet, SafeAreaView,TouchableOpacity,FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import { useSelector } from 'react-redux';
 import { fetchCategory, fetchNearExpStockReport } from '../Services/apiService';
-import MyEXPDDL from '../MyEXPDDL';
+import { Button } from 'react-native-paper';
 
 
 const NearExpStockRPT = () => {
-  
-    const informaitonAboutUser = useSelector((state) => state.user);
-    const [data, setData] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [ddlValue, setvalueddl] = useState(null);
-    const [ddlitem, setitemddl] = useState(null);
-    const [id, setId] = useState(informaitonAboutUser.facilityid);
 
-    
-  const fetchData = async (idm,value,crit) => {
-    try {    
-        alert("id:"+idm+" category:"+value+" Criteria:"+crit);
-    const StockRPTEXP = await fetchNearExpStockReport(idm,value,crit) 
-   alert(JSON.stringify(StockRPTEXP));  
-  // alert(JSON.stringify(StockRPTEXP));  
-   setData(StockRPTEXP);
+  const informaitonAboutUser = useSelector((state) => state.user);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [ddlValue, setvalueddl] = useState(null);
+  const [ddlitem, setitemddl] = useState(null);
+  const [id, setId] = useState(informaitonAboutUser.facilityid);
+  const [loading, setLoading] = useState(false);
+
+  const options = [
+    { label: '1 Month', value: '1' },
+    { label: '2 Months', value: '2' },
+    { label: '3 Months', value: '3' },
+    { label: '4 Months', value: '4' },
+    { label: '5 Months', value: '5' },
+    { label: '6 Months', value: '6' },
+  ];
+
+
+  const fetchData = async (idm, value, crit) => {
+    try {
+      setLoading(true);
+      alert("id:" + idm + " category:" + value + " Criteria:" + crit);
+      const StockRPTEXP = await fetchNearExpStockReport(idm, value, crit)
+      alert(JSON.stringify(StockRPTEXP));
+      // alert(JSON.stringify(StockRPTEXP));  
+      setData(StockRPTEXP);
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,37 +56,39 @@ const NearExpStockRPT = () => {
 
     // setvalueddl={setValue}
     // setItems={setData}
-  
- 
-  
-    if(value == 0 || value == null)
-    {
+
+
+
+    if (value == 0 || value == null) {
       alert("Please Category")
       return;
     }
 
-    alert("CatID:"+value);
-   
-   fetchData(id,value,"120");
+    alert("CatID:" + value);
+
+    fetchData(id, value, "120");
     //generate code
-     
-   // alert("successfully generated")
+
+    // alert("successfully generated")
 
   }
-  const fetchCategoryDropDown = async () => {
-    try {
-      const response = await fetchCategory(id);
-     // alert(JSON.stringify(response));  
-      setData(response);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  // const fetchCategoryDropDown = async () => {
+  //   try {
+  //     //const response = await fetchCategory(id);
+  //     // alert(JSON.stringify(response));  
 
-  useEffect(() => {    
-    fetchCategoryDropDown();
-     //   fetchData();
-  },[]
+
+
+  //     setDdlData(monthsArray);
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
+
+  useEffect(() => {
+    //fetchCategoryDropDown();
+    //   fetchData();
+  }, []
   );
 
   const renderItem = ({ item, index }) => (
@@ -88,7 +104,7 @@ const NearExpStockRPT = () => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemname}</Text>
       </View>
-     
+
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.strength1}</Text>
       </View>
@@ -97,17 +113,17 @@ const NearExpStockRPT = () => {
         <Text style={styles.cellText}>{item.batchno}</Text>
       </View>
 
-      
+
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.expdate}</Text>
       </View>
 
-      
-      
+
+
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.facstock}</Text>
       </View>
-     
+
     </View>
   );
 
@@ -115,99 +131,98 @@ const NearExpStockRPT = () => {
   return (
 
     <>
-    <SafeAreaView style={styles.container}>
-    <View style={styles.card}>
-    <Text style={styles.cardHeader}>Near Expiry Items</Text>
-        
-    <View style={{ zIndex: 1000 }} >
-            {data.length > 0 ? (
-              <DropDownPicker
-                open={open}
-                value={value}
-                searchable={true}
-                items={data.map((Cat) => (
-                  {
-                    label: Cat.categoryname,
-                    value: Cat.categoryid,
-                  }))}
-                setOpen={setOpen}
-                setValue={setValue}
-                setItems={setData}
-                // defaultValue={selectedItem ? selectedItem.value : null}
-                containerStyle={{ height: 40 }}
-                onChangeValue={(value) => {
+      <View style={styles.container}>
+        <View style={styles.card}>
+          {/* <Text style={styles.cardHeader}>Near Expiry Items</Text> */}
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ zIndex: 1000, width: "70%", marginRight: 20 }} >
+             
+                  <DropDownPicker
+                  items={options}
+                  defaultValue={selectedValue}
+                  containerStyle={{ height: 40 }}
+                  style={{ backgroundColor: '#fafafa' }}
+                  itemStyle={{
+                    justifyContent: 'flex-start',
+                  }}
+                  dropDownStyle={{ backgroundColor: '#fafafa' }}
+                  onChangeItem={(item) => setSelectedValue(item.value)}
+                />
+           
 
-                }
-                }
-                dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
-              />
-            ) : (
-              <Text>Loading data...</Text>
-            )
-            }
+            </View>
+            <View style={{ width: "25%", marginRight: 10, marginLeft: 0, marginBottom: 20 }}>
+              {/* <TouchableOpacity style={styles.button} onPress={() => ShowExpData(id)}>
+                <Text style={styles.buttonTextGenrate}>Show</Text>
+              </TouchableOpacity> */}
+              <Button
+                mode="contained"
+                icon="filter"
+                buttonColor="#728FCE"
+                textColor="#FFFFFF"
+                labelStyle={styles.buttonLabel}
+                loading={loading}
+                onPress={() => ShowExpData(id)}
+              >
+
+              </Button>
+            </View>
           </View>
 
-          
-          <View style={styles.container2}>
-          <Text style={styles.cardHeader}>Select Period</Text> 
-      <MyEXPDDL /> {/* Render your dropdown component here */}
-    </View>
-    <View style={styles.cell}>
-            <TouchableOpacity style={styles.button} onPress={() => ShowExpData(id)
 
-            }>
-    <Text style={styles.buttonTextGenrate}>Show</Text>
-  </TouchableOpacity>            
+
+
+
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Text style={styles.headerText}>Code</Text>
+              <Text style={styles.headerText}>Item</Text>
+              <Text style={styles.headerText}>Strength</Text>
+              <Text style={styles.headerText}>Batch No</Text>
+              <Text style={styles.headerText}>Exp Date</Text>
+              <Text style={styles.headerText}>Stock</Text>
             </View>
-
-            <View style={styles.container}>     
-      <View style={styles.header}>       
-        <Text style={styles.headerText}>Code</Text>
-        <Text style={styles.headerText}>Item</Text>        
-        <Text style={styles.headerText}>Strength</Text>
-        <Text style={styles.headerText}>Batch No</Text>    
-        <Text style={styles.headerText}>Exp Date</Text>  
-        <Text style={styles.headerText}>Stock</Text>      
-      </View>
-      <FlatList
-        data={data}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={renderItem}
-      />
-    </View>
+            <FlatList
+              data={data}
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={renderItem}
+            />
+          </View>
 
         </View>
 
-    </SafeAreaView>
-      </>
+      </View>
+    </>
 
   );
 }
 
-  const styles = StyleSheet.create
+const styles = StyleSheet.create
   ({
     container: {
       flex: 1,
-      backgroundColor: '#FFFFFF',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'white',
     },
     container2: {
-        flex: 1,
-        marginBottom: 5,
-        marginTop: 20,
-      },
+      flex: 1,
+      marginBottom: 5,
+      marginTop: 20,
+    },
     card: {
-        backgroundColor: '#F8F8F8',
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 5,
-        marginTop: 20,
-      },
-      cardHeader: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        textAlign: 'center',
-      },
+      backgroundColor: '#F8F8F8',
+      borderRadius: 8,
+      padding: 16,
+      marginBottom: 5,
+      marginTop: 20,
+    },
+    cardHeader: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 16,
+      textAlign: 'center',
+    },
     inputContainer: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -248,22 +263,22 @@ const NearExpStockRPT = () => {
       fontSize: 14,
     },
     buttonTextGenrate: {
-        color: 'white',
-        fontWeight: 'bold',
-        alignSelf:'center'
-      },
-  
-      button: {
-        backgroundColor: 'green',
-        borderRadius: 5,
-        padding: 10,
-        width:200,
-        alignSelf:'center',
-        marginTop:20
-      },
-      buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
-      },
+      color: 'white',
+      fontWeight: 'bold',
+      alignSelf: 'center'
+    },
+
+    button: {
+      backgroundColor: 'green',
+      borderRadius: 5,
+      padding: 10,
+      width: 200,
+      alignSelf: 'center',
+      marginTop: 20
+    },
+    buttonText: {
+      color: 'white',
+      fontWeight: 'bold',
+    },
   });
-  export default NearExpStockRPT;
+export default NearExpStockRPT;

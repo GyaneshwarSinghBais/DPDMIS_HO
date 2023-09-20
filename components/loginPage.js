@@ -11,7 +11,7 @@ const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("chcbadekilepal@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$
   const [password, setPassword] = useState("Cgmsc#123$");
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch(); // Initialize the useDispatch hook
 
 
@@ -66,13 +66,13 @@ const LoginPage = ({ navigation }) => {
     } catch (error) {
       // console.error("Login error:", error);
       // console.log(error); // Add this line to inspect the error object
-      if (error.response  && error.response.status === 400) {
+      if (error.response && error.response.status === 400) {
         setErrorMessage("Invalid email or password. Please check your credentials.");
       } else {
         setErrorMessage("An error occurred during login. Please try again later.");
       }
-    }finally {
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,55 +85,55 @@ const LoginPage = ({ navigation }) => {
       style={styles.backgroundImage}
     >
 
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      {errorMessage !== "" && <Text style={styles.errorText}>{errorMessage}</Text>}
-      {/* <TextInput
+      <View style={styles.container}>
+        <Text style={styles.title}>Login</Text>
+        {errorMessage !== "" && <Text style={styles.errorText}>{errorMessage}</Text>}
+        {/* <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
       /> */}
-      <TextInput
-        mode="outlined"
-        label="Email"
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
+        <TextInput
+          mode="outlined"
+          label="Email"
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+        />
 
-      <TextInput
-        mode="outlined"
-        label="Password"
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={true}
-        style={styles.input}
-      />
+        <TextInput
+          mode="outlined"
+          label="Password"
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+          style={styles.input}
+        />
 
-<Button
-        mode="contained"
-        buttonColor="#728FCE"
-        textColor="#FFFFFF"
-        labelStyle={styles.buttonLabel}
-        onPress={onLogin}
-        loading={loading}
-      >
-        Login
-      </Button>
-    </View>
+        <Button
+          mode="contained"
+          buttonColor="#728FCE"
+          textColor="#FFFFFF"
+          labelStyle={styles.buttonLabel}
+          onPress={onLogin}
+          loading={loading}
+        >
+          Login
+        </Button>
+      </View>
 
-    </ImageBackground>  
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage:{
-      flex: 1,
-      resizeMode: "cover",
-      justifyContent: "center",
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
   container: {
     flex: 1,

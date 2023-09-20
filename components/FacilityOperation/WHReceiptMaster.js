@@ -19,7 +19,8 @@ const WHReceiptMaster = ({ navigation }) => {
   const [visible, setVisible] = React.useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-
+  const [seletedRowNocId, setSeletedRowNocId] = useState('');
+  const [seletedWHID, setseletedWHID] = useState('');
   const [date, setDate] = useState(new Date())
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
@@ -61,9 +62,9 @@ const WHReceiptMaster = ({ navigation }) => {
 
   const fetchData = async () => {
     try {
-      alert("before calling grid ");
+     // alert("before calling grid ");
       const stockReportData = await fetchIncomplReceiptMasterWH(id);
-      alert("inside fetch: " + JSON.stringify(stockReportData));
+   //   alert("inside fetch: " + JSON.stringify(stockReportData));
       setData(stockReportData);
     } catch (error) {
       console.error('Error:', error);
@@ -79,9 +80,12 @@ const WHReceiptMaster = ({ navigation }) => {
     if (receiptInfoData && receiptInfoData.result && receiptInfoData.result.value) {
       const dataToPass = receiptInfoData.result.value[0];
       //navigation.navigate('Add New Issue', { item: dataToPass });
-      alert("Navigation Happen");
+      alert(JSON.stringify(dataToPass));
+      navigation.navigate('Add New Receipt', { item: dataToPass });
     }
   }, [receiptInfoData]);
+
+
 
 
 
@@ -105,7 +109,6 @@ const WHReceiptMaster = ({ navigation }) => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.whissueno}</Text>
       </View>
-      
        <View style={styles.cell}>
         <Text style={styles.cellText}>{item.whissuedt}</Text>
       </View>
@@ -161,63 +164,60 @@ const WHReceiptMaster = ({ navigation }) => {
     //navigation.navigate('Add New Issue', { item: item, });
     //if issue no already genrated then nave ... genrate issue no and take issue data then navigate
     if (item.facreceiptid == "" || item.facreceiptid == null && item.indentid != null) {
-      //alert("Issue id is null for IndentId " + item.nocid);
+      setSeletedRowNocId(item.indentid);
+     setseletedWHID(item.warehouseid);
+  
       setVisible(true);
-      //Ask Issue Date and generate IssueID then..
-      //navigate  and show only indented items in ddl and not more than indented qty
+    
     }
     else if (item.facreceiptid == "" || item.facreceiptid == null && (item.indentid == "" || item.indentid == null)) {
       alert("Not Issued by Warehouse, You can Receipt after Warehouse Issuance")
+      return;
     }
 
     else {
-      alert("facreceiptid = " + item.facreceiptid + " and  IndentId " + item.indentid)
-      //navigate directly and show only indented items in ddl and not more than indented qty
+     //alert("facreceiptid = " + item.facreceiptid + " and  IndentId " + item.indentid+ " and  WHID " + item.warehouseid)
+     //alert(JSON.stringify(item.data));
+     // alert(item);
+      navigation.navigate('Add New Receipt', { item: item });
     }
 
   }
 
-  const navigationFunctionForAdd = () => {
-    navigation.navigate('AddWardIssueMaster');
-  }
+  // const navigationFunctionForAdd = () => {
+  //   navigation.navigate('AddWardIssueMaster');
+  // }
 
 
-  const issueDateSaveAndGenerate = async () => {
+  const ReceiptDateSaveAndGenerate = async () => {
+   
     if (text == '' || text == null) {
       let toast = Toast.show('Please Enter Receipt Date.', {
         duration: Toast.durations.LONG,
       });
       return;
     }
+   
+   // alert("WHID:"+seletedRowNocId);
 
-    alert("Button Pressed");
 
     try {
       const WReceiptMaster = {
-        // issueid: 0, // It's auto-generated
-        // facilityid: id, // Value from route params
-        // //issueno: "123",
-        // issuedate: text, // Stock quantity
-        // issueddate: text,
-        // wrequestdate: text,
-        // wrequestby: requestedBy, // Allotted quantity (same as issueQty)
-        // // isuseapp: 'Y',
-        // // issuetype: "NO", // Issue quantity
-        // wardid: value,
-
+    
         facreceiptid: 0,
         facilityid: id,
-        // indentid: data.indentid,
-        indentid: "237516",
-        // warehouseid: data.warehouseid,
-         warehouseid: "2617",
-        facreceiptdate: text
-
+        indentid: seletedRowNocId,
+         warehouseid: seletedWHID,
+        facreceiptdate: text,
+        status:"I",
+        isuseapp:"Y",
+        facreceiptno:"0",
+        facreceipttype:"NO"
       };
 
-      
-      const returnResult = await postReceiptMaster(WReceiptMaster, id);
-      setReceiptInfoData(returnResult);
+  alert(JSON.stringify(WReceiptMaster));
+ const returnResult = await postReceiptMaster(WReceiptMaster, id);
+  setReceiptInfoData(returnResult);
     }
     catch (error) {
       console.error("Error posting issue:", error);
@@ -237,10 +237,10 @@ const WHReceiptMaster = ({ navigation }) => {
 
             <View style={styles.header}>
               <Text style={styles.headerText}>SN</Text>
-              <Text style={styles.headerText}>Indented DT</Text>
-              <Text style={styles.headerText}>Indented/Issued</Text>
-              <Text style={styles.headerText}>WH Issued DT</Text>
-              <Text style={styles.headerText}>Received DT</Text>
+              <Text style={styles.headerText}>Ind.DT</Text>
+              <Text style={styles.headerText}>Ind./Issued</Text>
+              <Text style={styles.headerText}>WH DT</Text>
+              <Text style={styles.headerText}>Rec.DT</Text>
               <Text style={styles.headerText}>Rec. Status</Text>
               <Text style={styles.headerText}>Wid</Text>
               <Text style={styles.headerText}>Indentid</Text>
@@ -285,7 +285,7 @@ const WHReceiptMaster = ({ navigation }) => {
 
             <Button
               mode="contained"
-              onPress={() => issueDateSaveAndGenerate()}
+              onPress={() => ReceiptDateSaveAndGenerate()}
             >
               Genenate
             </Button>
