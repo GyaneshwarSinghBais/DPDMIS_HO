@@ -8,7 +8,7 @@ import { TextInput, Button } from 'react-native-paper';
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("chcbadekilepal@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$
+  const [email, setEmail] = useState("uphcamasivani@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$
   const [password, setPassword] = useState("Cgmsc#123$");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);

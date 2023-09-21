@@ -1,32 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, SafeAreaView, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button, Dialog, Portal, PaperProvider } from 'react-native-paper';
+import { Button, Dialog, Portal } from 'react-native-paper';
 //import { ScrollView } from 'react-native-virtualized-view'
 //import { useNavigation } from '@react-navigation/native';
-import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
+import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchRacks, fetchReceiptDetails, fetchReceiptItemsDDL, fetchReceiptItemsDetail, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const WHReceiptItems = ({ navigation, props }) => {
+  const [refreshing, setRefreshing] = React.useState(false);
   const informaitonAboutUser = useSelector((state) => state.user);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
   const [FlatListData, setFlatListData] = useState([]);
-  const [deleteData, setdeleteData] = useState([]);
+  //const [deleteData, setdeleteData] = useState([]);
   const [itemStockData, setItemStockData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
-  // const [stockQty, setStockQty] = useState(null);
+  const [stockQty, setStockQty] = useState(null);
   // const [multipleInfo, setMultipleInfo] = useState(null);
   const [issueQty, setIssueQty] = useState(null);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [oldValue, setOldValue] = useState();
-  //const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
+  const [inwno, setinwno] = useState();
+  const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
   const [incompleteWardIssueItemsData, setIncompleteWardIssueItemsData] = useState([]);
-
   const [visible, setVisible] = React.useState(true);
+  const [receiptitems, setReceiptitems] = useState([]);
+
+  const [open1, setOpen1] = useState(false);
+  const [value1, setValue1] = useState(null);
+  const [oldValue1, setOldValue1] = useState();
+  const [racks, setRacks] = useState([]);
+ 
+  //const [receiptDetails, setReceiptDetails] = useState([]);
 
   const hideDialog = () => setVisible(false);
 
@@ -58,7 +68,7 @@ const WHReceiptItems = ({ navigation, props }) => {
   // const wrequestdate = route.params?.item.wrequestdate;
   const RDATE = route.params?.item.facreceiptdate;
   const RNO = route.params?.item.facreceiptno;
-  const WHID= route.params?.item.warehouseid;
+  const WHID = route.params?.item.warehouseid;
   const RECEIPTID = route.params?.item.facreceiptid;
   const INDENTID = route.params?.item.indentid;
 
@@ -149,10 +159,33 @@ const WHReceiptItems = ({ navigation, props }) => {
 
 
 
-  const fetchDataItemStock = async () => {
+  const fetchReceiptItems = async () => {
     try {
-      const response = await fetchItemStock(id, value, INDENTID);
-      setItemStockData(response);
+
+      const response = await fetchReceiptItemsDDL(id, RECEIPTID, INDENTID);
+      setReceiptitems(response);
+      //alert("id: "+ id);  
+      //alert("RECEIPTID: "+RECEIPTID);  
+      //alert("INDENTID: "+INDENTID);  
+      //alert(" inside fetchReceiptitems: " + JSON.stringify(response));
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchRacksData = async () => {
+    try {
+      const response = await fetchRacks(id);
+      setRacks(response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchRcptDetails = async () => {
+    try {
+      const response = await fetchReceiptDetails(id);
+      setReceiptDetails(response);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -164,13 +197,32 @@ const WHReceiptItems = ({ navigation, props }) => {
 
       setIncompleteWardIssueItemsData(response);
     } catch (error) {
+    }
+  };
+
+  const fetchReceiptItemsDetailData = async () => {
+    try {
+      alert("id: " + id + "RECEIPTID: " + RECEIPTID + "inwno: " + inwno);
+      const response = await fetchReceiptItemsDetail(id, RECEIPTID, INDENTID, "231832");
+      setItemStockData(response);
+      //alert("GetDataFroMDDL_Selection: "+response);  
+    } catch (error) {
       console.error('Error:', error);
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchReceiptItems();
+    fetchReceiptItemsDetailData();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   useEffect(() => {
-    fetchData();
-    getIncompleteWardIssueItems();
+    fetchReceiptItems();
+    //fetchRcptDetails();
   }, []);
 
 
@@ -207,16 +259,9 @@ const WHReceiptItems = ({ navigation, props }) => {
         <Text style={styles.cellText}>{item.locationno}</Text>
       </View>
 
-      <View >
-        {/* <Text   onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}>Delete</Text> */}
+      <View >       
         <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => deleteIncompIssueItems(item.issueItemID)} />
       </View>
-
-
-      {/* <View style={styles.cell}>
-        <Text onPress={()=>alert(item.issueID)} style={styles.cellText}>{item.status}</Text>
-      </View> */}
-
       <View style={styles.cell}>
         <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.status}</Text>
       </View>
@@ -226,13 +271,13 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   );
 
-  // useEffect(()=>{
-  //   if(itemStockData.length > 0){
-  //     alert("itemStockData update : " + JSON.stringify(itemStockData));       
-  //     alert("itemStockData.itemid : "+ JSON.stringify(itemStockData[0].itemid))       
-  //     setIsItemStockDatSet(true);
-  //   }
-  // },[itemStockData]);
+  useEffect(() => {
+    if (itemStockData.length > 0) {
+      // alert("itemStockData update : " + JSON.stringify(itemStockData));
+      // alert("itemStockData.itemid : " + JSON.stringify(itemStockData[0].itemid))
+      setIsItemStockDatSet(true);
+    }
+  }, [itemStockData]);
 
 
 
@@ -319,7 +364,9 @@ const WHReceiptItems = ({ navigation, props }) => {
              
               </View> */}
 
-          <View style={styles.card}>
+          <View style={styles.card} refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
             {/* <Text style={styles.cardHeader}>Ward Issues Against Indent</Text> */}
             <View style={styles.cardContent}>
               {/* <View style={styles.cardItem}>
@@ -351,32 +398,37 @@ const WHReceiptItems = ({ navigation, props }) => {
           </Text>
 
           <View style={{ zIndex: 1000 }} >
-            {data.length > 0 ? (
+            {receiptitems.length > 0 ? (
               <DropDownPicker
                 open={open}
                 value={value}
                 searchable={true}
-                items={data.map((item) => (
+                items={receiptitems.map((item) => (
                   {
                     label: item.name,
-                    value: item.itemid,
+                    value: item.inwno,
                   }))}
                 setOpen={setOpen}
                 setValue={setValue}
-                setItems={setData}
+                setItems={setReceiptitems}
                 // defaultValue={selectedItem ? selectedItem.value : null}
                 containerStyle={{ height: 40 }}
                 onChangeValue={(value) => {
                   if (value != null) {
                     setOldValue(value);
+                    setinwno(value);
                     if (value != oldValue) {
-                      fetchDataItemStock();
+                      //alert("dropdown invoked");
+                      fetchReceiptItemsDetailData();
+                      fetchRacksData();
                       //incompleteWardIssueItemsData
                     }
 
                   }
 
                 }}
+
+
                 dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
               />
             ) : (
@@ -388,36 +440,55 @@ const WHReceiptItems = ({ navigation, props }) => {
 
           {itemStockData.length > 0 ? (
             <View style={styles.card}>
-              {/* <Text style={styles.cardHeader}>Item Issuance</Text> */}
               <View style={styles.cardContent}>
                 <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
-                  <Text style={styles.labelRow}>Indent: </Text>
-                  <Text style={styles.valueStock}>{itemStockData[0].indentqty}</Text>
-                  <Text>  |  </Text>
-                  <Text style={styles.labelRow}>Stock: </Text>
-                  <Text style={styles.valueStock}>{itemStockData[0].stock}</Text>
-                  <Text>  |   </Text>
-                  <Text style={styles.labelRow}>Multiple:</Text>
-                  <Text style={styles.valueStock}>{itemStockData[0].multiple}</Text>
+                  <Text style={styles.labelRow}>Receipt QTY: </Text>
+                  <Text style={styles.valueStock}>{itemStockData[0].name}</Text>
                 </View>
-                {/* <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
-                  <Text style={styles.labelRow}>Indent QTY: </Text>
-                  <Text style={styles.valueStock}>{itemStockData[0].indentqty}</Text>
-                  <Text>     </Text>    
-                  <Text>     </Text>    
-                  <Text>     </Text>               
-                </View> */}
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label} >To Be Issued : </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Issue QTY"
-                  keyboardType="numeric"
-                  onChangeText={text => setIssueQty(text)}
-                  value={issueQty}
-                />
+                <Text style={styles.label} >Rack : </Text>
+              
+
+                <View style={{ zIndex: 1000, width:175, marginRight:10 }} >
+                  {receiptitems.length > 0 ? (
+                    //Rack Dropdown
+                    <DropDownPicker
+                      open={open1}
+                      value={value1}
+                      searchable={true}
+                      items={racks.map((item) => (
+                        {
+                          label: item.locationno, 
+                          value: item.rackid, 
+                        }))}
+                      setOpen={setOpen1}
+                      setValue={setValue1}
+                      setItems={setRacks}
+                      // defaultValue={selectedItem ? selectedItem.value : null}
+                      containerStyle={{ height: 40 }}
+                      onChangeValue={(value1) => {
+                        if (value1 != null) {
+                          setOldValue1(value);
+                          //setinwno(value);
+                          if (value1 != oldValue1) {
+                            //alert("dropdown invoked");
+                            //fetchReceiptItemsDetailData();
+                            //incompleteWardIssueItemsData
+                          }
+
+                        }
+                      }}
+                      dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
+                      dropDownPosition = "top"
+                    />
+                  ) : (
+                    <Text>Loading data...</Text>
+                  )
+                  }
+                </View>
+
                 <TouchableOpacity style={styles.button} onPress={() => IssueQtyEvent()}>
                   <Text style={styles.buttonText}>Add</Text>
                 </TouchableOpacity>
@@ -428,7 +499,7 @@ const WHReceiptItems = ({ navigation, props }) => {
             </View>) : (
             <View>
               <Text>
-                {/* Loding Item Details ... */}
+
               </Text>
             </View>
           )}
@@ -436,7 +507,7 @@ const WHReceiptItems = ({ navigation, props }) => {
 
           {/* {showIncompleteWardIssueItems()} */}
 
-          <View style={styles.containerGrid}>
+          {/* <View style={styles.containerGrid}>
             <View style={styles.header}>
               <Text style={styles.headerText}>S.No</Text>
               <Text style={styles.headerText}>Code</Text>
@@ -454,7 +525,7 @@ const WHReceiptItems = ({ navigation, props }) => {
                 renderItem={renderItem}
               />
             </View>
-          </View>
+          </View> */}
 
 
         </View>
@@ -476,14 +547,14 @@ const WHReceiptItems = ({ navigation, props }) => {
         </View>
       </SafeAreaView>
 
-      <Portal>
+      {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Actions>
-            <Button onPress={() => console.log('Cancel')} style={{color:'red'}}>Cancel</Button>
+            <Button onPress={() => console.log('Cancel')} style={{ color: 'red' }}>Cancel</Button>
             <Button onPress={() => console.log('Ok')}>Ok</Button>
           </Dialog.Actions>
         </Dialog>
-      </Portal>
+      </Portal> */}
     </>
   )
 }

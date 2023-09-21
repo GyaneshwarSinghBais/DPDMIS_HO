@@ -23,6 +23,7 @@ const IssueItemsAgainstIndent = ({ navigation, props }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [oldValue, setOldValue] = useState();
+
   //const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
   const [incompleteWardIssueItemsData, setIncompleteWardIssueItemsData] = useState([]);
 
@@ -368,6 +369,7 @@ const IssueItemsAgainstIndent = ({ navigation, props }) => {
                 onChangeValue={(value) => {
                   if (value != null) {
                     setOldValue(value);
+                 
                     if (value != oldValue) {
                       fetchDataItemStock();
                       //incompleteWardIssueItemsData

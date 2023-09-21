@@ -287,6 +287,52 @@ export const postReceiptMaster = async (receiptData, facid) => {
   }
 };
 
+export const fetchReceiptItemsDDL = async (facid,receiptid,indentId) => {
+  try {
+    //alert("Inset fetchIndentItems:" + indentId)
+    const response = await api.get(`/CGMSCStock/getReceiptItemsDDL?faclityId=${facid}&FACRECEIPTID=${receiptid}&IndentID=${indentId}`);
+    //alert("gyan Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchRacks = async (facid) => {
+  try {
+    //alert("Inset fetchIndentItems:" + indentId)
+    const response = await api.get(`/CGMSCStock/getRacks?WH_FACID=${facid}`);
+    alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchReceiptDetails = async (receipttype,facid,facReceiptid) => {
+  try {
+    //alert("Inset fetchIndentItems:" + indentId)
+    const response = await api.get(`/CGMSCStock/getReceiptDetails?facilityReceiptType=${receipttype}&facilityId=${facid}&facReceiptId=${facReceiptid}`);
+    //alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchReceiptItemsDetail = async (faclityId,FACRECEIPTID,IndentID,inwno) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getReceiptItemsDetail?faclityId=${faclityId}&FACRECEIPTID=${FACRECEIPTID}&IndentID=${IndentID}&inwno=${inwno}`);
+    alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
 
 // You can define more API functions here
 // export const fetchOtherData = async () => { ... };
