@@ -3,8 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://140.238.246.250:8080/api", // Server URL
-  //baseURL: "https://localhost:7247/api", // Development URL
+  //baseURL: "http://140.238.246.250:8080/api", // Server URL
+  baseURL: "https://localhost:7247/api", // Development URL
 });
 
 export const loginUser = async (email, password) => {
@@ -276,7 +276,7 @@ export const postReceiptMaster = async (receiptData, facid) => {
   console.log(JSON.stringify(receiptData));
   try {  
     const response = await api.post(`/CGMSCStock/postReceiptMaster?facid=${facid}`, receiptData);
-    alert(JSON.stringify(response.data));
+    //alert(JSON.stringify(response.data));
     if (response.status === 200) {      
       return response.data;
     } else {
@@ -302,7 +302,7 @@ export const fetchRacks = async (facid) => {
   try {
     //alert("Inset fetchIndentItems:" + indentId)
     const response = await api.get(`/CGMSCStock/getRacks?WH_FACID=${facid}`);
-    alert("Response: " + JSON.stringify(response.data));
+    //alert("Response: " + JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     throw error;
@@ -324,7 +324,52 @@ export const fetchReceiptDetails = async (receipttype,facid,facReceiptid) => {
 export const fetchReceiptItemsDetail = async (faclityId,FACRECEIPTID,IndentID,inwno) => {
   try {   
     const response = await api.get(`/CGMSCStock/getReceiptItemsDetail?faclityId=${faclityId}&FACRECEIPTID=${FACRECEIPTID}&IndentID=${IndentID}&inwno=${inwno}`);
-    alert("Response: " + JSON.stringify(response.data));
+    //alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchReceiptItms = async (receiptData,rackID,facid,facReceiptId,whinwno) => {
+  try {  
+    const response = await api.post(`/CGMSCStock/postReceiptItems?rackID=${rackID}&facid=${facid}&facReceiptId=${facReceiptId}&whinwno=${whinwno}`, receiptData);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error("Failed to post Receipt data");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const deleteReceipts= async (receiptId) => {
+  try {
+    //alert("before" + issueItemId)
+    const response = await api.delete(`/CGMSCStock/deleteReceipts?receiptId=${receiptId}`);
+    //alert("after : " + JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const putReceipts = async (receiptId) => {  
+  try {
+    const response = await api.put(`/CGMSCStock/completeReceipts?receiptId=${receiptId}`);   
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteReceiptItems = async (inwno,facReceiptItemId,itemid,receiptId,deletedBatchQty) => {  
+  try {
+    const response = await api.delete(`/CGMSCStock/deleteReceiptItems?inwno=${inwno}&facReceiptItemId=${facReceiptItemId}&itemid=${itemid}&receiptId=${receiptId}&deletedBatchQty=${deletedBatchQty}`);   
     return response.data;
   } catch (error) {
     throw error;

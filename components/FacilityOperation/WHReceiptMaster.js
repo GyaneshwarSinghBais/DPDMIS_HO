@@ -86,7 +86,12 @@ const WHReceiptMaster = ({ navigation }) => {
   }, [receiptInfoData]);
 
 
-
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
 
   const renderItem = ({ item, index }) => (

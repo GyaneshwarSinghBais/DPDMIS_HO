@@ -6,8 +6,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Dialog, Portal } from 'react-native-paper';
 //import { ScrollView } from 'react-native-virtualized-view'
 //import { useNavigation } from '@react-navigation/native';
-import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchRacks, fetchReceiptDetails, fetchReceiptItemsDDL, fetchReceiptItemsDetail, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
-import { ScrollView } from 'react-native-gesture-handler';
+import { deleteIncompleteIssueItems, deleteReceipts, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchRacks, fetchReceiptDetails, fetchReceiptItemsDDL, fetchReceiptItemsDetail, fetchReceiptItms, fetchWardIssueItems, postWardIssue, putCompleteWardIssues, putReceipts } from '../Services/apiService';
+
 
 
 const WHReceiptItems = ({ navigation, props }) => {
@@ -27,7 +27,7 @@ const WHReceiptItems = ({ navigation, props }) => {
   const [oldValue, setOldValue] = useState();
   const [inwno, setinwno] = useState();
   const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
-  const [incompleteWardIssueItemsData, setIncompleteWardIssueItemsData] = useState([]);
+  const [receivedItemsGrid, setReceivedItemsGrid] = useState([]);
   const [visible, setVisible] = React.useState(true);
   const [receiptitems, setReceiptitems] = useState([]);
 
@@ -77,68 +77,53 @@ const WHReceiptItems = ({ navigation, props }) => {
     setSelectedItem(item);
   };
 
-  const IssueQtyEvent = async () => {
-    if (issueQty !== null && !isNaN(issueQty) && issueQty !== 0) {
-      const parsedQty = Number(issueQty);
-      const stockQty = itemStockData[0].stock;
+  const ReceiveQtyEvent = async () => {
+   
 
-      if (parsedQty > Number(itemStockData[0].indentqty)) {
-        alert("Issue quantity cannot be more than indent quantity.");
+      if (value1 == 0 || value1 == null) {
+        alert("Please Select Rack")
         return;
       }
 
-      // alert("issueQty"+issueQty);
-      // alert("itemStockData[0].multiple"+itemStockData[0].multiple);
 
 
-      const myReminder = (issueQty % itemStockData[0].multiple);
+      
 
 
-      if (myReminder == 0) {
+     
 
-
-        if (parsedQty <= stockQty) {
+      
           try {
-            const issueData = {
-              issueitemid: 0, // It's auto-generated
-              issueid: ISSUEID, // Value from route params
-              itemid: value, // Selected item value
-              currentstock: itemStockData[0].stock, // Stock quantity
-              allotted: parsedQty, // Allotted quantity (same as issueQty)
-              issueqty: parsedQty, // Issue quantity
+            const receiptData = {
+              facreceiptitemid: 0,
+              facreceiptid: RECEIPTID
+             // itemid: 0, //get value api side
+             // indentitemid: 2163804,
+             // absrqty: 1800
             };
 
 
-            const response = await postWardIssue(issueData, id);
-            getIncompleteWardIssueItems();
-            setIssueQty(null);
-            fetchData();
-            alert("Successfull Issued " + parsedQty + " Quantity");
+            alert("Before posting: "+ JSON.stringify(receiptData) + "value1: " + value1 + "value: " + value);
+            const response = await fetchReceiptItms(receiptData, value1, id, RECEIPTID, value);  
+            fetchReceiptItems();
+            fetchRcptDetails();
+            alert("Item Successfull Received ");
           }
           catch (error) {
             console.error("Error posting issue:", error);
           }
-        }
-        else {
-          alert("Issue quantity cannot be more than stock quantity.");
-        }
-      } else {
-        alert("Enter Quantity Shoud be Multiple of" + itemStockData[0].multiple);
-      }
-    } else {
-      alert("Please Enter Valid Issue Quantity.");
-      //alert("मेरा नाम जोकर हिट मूवी  ");
-    }
+       
+      
+   
   };
 
 
-  const deleteIncompIssueItems = async (isueItmId) => {
+  const deleteReceiptItems = async (itm) => {
     try {
-      //alert("isueItmId : "+isueItmId)
-      const response = await deleteIncompleteIssueItems(isueItmId);
+      alert("before api call : "+ JSON.stringify(itm))
+      const response = await deleteReceiptItems(itm.inwno,itm.facreceiptitemid,itm.itemid,itm.facreceiptid,itm.absrqty);
       setdeleteData(response);
-      fetchData();
-      getIncompleteWardIssueItems();
+      fetchRcptDetails();
       alert("Item Deleted Successfully.");
     } catch (error) {
       console.error('Error:', error);
@@ -146,16 +131,7 @@ const WHReceiptItems = ({ navigation, props }) => {
   };
 
 
-  const fetchData = async () => {
-    try {
-      //alert("Indent Id: " + INDENTID);
-      const response = await fetchIndentItems(INDENTID);
-      //alert(JSON.stringify(response));         
-      setData(response);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+
 
 
 
@@ -184,21 +160,14 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   const fetchRcptDetails = async () => {
     try {
-      const response = await fetchReceiptDetails(id);
-      setReceiptDetails(response);
+      const response = await fetchReceiptDetails("NO",id,RECEIPTID);
+      setReceivedItemsGrid(response);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  const getIncompleteWardIssueItems = async () => {
-    try {
-      const response = await fetchIncompleteWardIssueItems(RECEIPTID);
-
-      setIncompleteWardIssueItemsData(response);
-    } catch (error) {
-    }
-  };
+ 
 
   const fetchReceiptItemsDetailData = async () => {
     try {
@@ -215,6 +184,7 @@ const WHReceiptItems = ({ navigation, props }) => {
     setRefreshing(true);
     fetchReceiptItems();
     fetchReceiptItemsDetailData();
+    fetchRcptDetails();
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -222,6 +192,7 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   useEffect(() => {
     fetchReceiptItems();
+    fetchRcptDetails();
     //fetchRcptDetails();
   }, []);
 
@@ -236,19 +207,19 @@ const WHReceiptItems = ({ navigation, props }) => {
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.itemCode}</Text>
+        <Text style={styles.cellText}>{item.itemcode}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.itemName}</Text>
-      </View>
-
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issueQty}</Text>
+        <Text style={styles.cellText}>{item.itemname}</Text>
       </View>
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.batchno}</Text>
+      </View>
+
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.absrqty}</Text>
       </View>
 
       <View style={styles.cell}>
@@ -260,7 +231,7 @@ const WHReceiptItems = ({ navigation, props }) => {
       </View>
 
       <View >       
-        <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => deleteIncompIssueItems(item.issueItemID)} />
+        <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => deleteReceiptItems(item)} />
       </View>
       <View style={styles.cell}>
         <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.status}</Text>
@@ -276,6 +247,7 @@ const WHReceiptItems = ({ navigation, props }) => {
       // alert("itemStockData update : " + JSON.stringify(itemStockData));
       // alert("itemStockData.itemid : " + JSON.stringify(itemStockData[0].itemid))
       setIsItemStockDatSet(true);
+      fetchRcptDetails();
     }
   }, [itemStockData]);
 
@@ -309,9 +281,9 @@ const WHReceiptItems = ({ navigation, props }) => {
   const fnComplete = async () => {
     try {
 
-      const response = await putCompleteWardIssues(ISSUEID);
+      const response = await putReceipts(RECEIPTID);
       alert("Completed Sucessfully !!");
-      navigation.navigate("Ward Issue Against Indent");
+      navigation.navigate("Receipt From Warehouse");
     } catch (error) {
       console.error('Error:', error);
     }
@@ -320,14 +292,14 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   const fnDelete = async () => {
     try {
-      const response = await deleteWardIssues(ISSUEID);
+      const response = await deleteReceipts(RECEIPTID);
       alert("Deleted Sucessfully !!");
-      navigation.navigate("Ward Issue Against Indent");
+      navigation.navigate("Receipt From Warehouse");
       //setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
-    //navigation.navigate("Ward Issue Against Indent");   
+   // navigation.navigate("Ward Issue Against Indent");   
   }
 
 
@@ -343,7 +315,7 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   // ... (other parts of your code)
 
-  <TouchableOpacity style={styles.button} onPress={IssueQtyEvent}>
+  <TouchableOpacity style={styles.button} onPress={ReceiveQtyEvent}>
     <Text style={styles.buttonText}>Add</Text>
   </TouchableOpacity>
 
@@ -489,7 +461,7 @@ const WHReceiptItems = ({ navigation, props }) => {
                   }
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={() => IssueQtyEvent()}>
+                <TouchableOpacity style={styles.button} onPress={() => ReceiveQtyEvent()}>
                   <Text style={styles.buttonText}>Add</Text>
                 </TouchableOpacity>
               </View>
@@ -507,7 +479,7 @@ const WHReceiptItems = ({ navigation, props }) => {
 
           {/* {showIncompleteWardIssueItems()} */}
 
-          {/* <View style={styles.containerGrid}>
+          <View style={styles.containerGrid}>
             <View style={styles.header}>
               <Text style={styles.headerText}>S.No</Text>
               <Text style={styles.headerText}>Code</Text>
@@ -520,12 +492,12 @@ const WHReceiptItems = ({ navigation, props }) => {
             </View>
             <View style={{ flex: 1 }}>
               <FlatList
-                data={incompleteWardIssueItemsData}
+                data={receivedItemsGrid}
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={renderItem}
               />
             </View>
-          </View> */}
+          </View>
 
 
         </View>
