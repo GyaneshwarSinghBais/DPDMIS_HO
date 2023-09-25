@@ -143,7 +143,7 @@ const StockOut = () => {
                         setOpen={setOpen}
                         setValue={setValue}
                         setItems={setData}
-                        containerStyle={{ height: 30, width: 450, margin: 20 }}
+                        containerStyle={{ height: 30, width: 200, margin: 20 }}
                         onChangeValue={(value) => {
                             if (value != null) {
                                 setOldValue(value);
@@ -231,25 +231,28 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        // alignItems: 'center',
         paddingHorizontal: 10,
         paddingVertical: 5,
     },
     button: {
 
         marginTop: 15,
+        marginLeft:-15,
         paddingVertical: 10,
         backgroundColor: '#3377FF',
         borderRadius: 5,
         width: 100,
-        alignItems: 'right',
+        // alignItems: 'right',
         textAlign: 'center',
-        alignSelf: 'right',
+        // alignSelf: 'right',
+      
 
     },
     buttonText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
+        alignSelf:'center'
     },
     header: {
         flexDirection: 'row',
@@ -279,7 +282,7 @@ const styles = StyleSheet.create({
     },
     cell: {
         flex: 1,
-        alignItems: 'center',
+        // alignItems: 'center',
     },
     cellText: {
         fontSize: 14,
@@ -287,7 +290,7 @@ const styles = StyleSheet.create({
     cardItemRow: {
         marginTop: 15,
         flexDirection: 'row',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 8,
     },
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
     },
     cardItemRow: {
         flexDirection: 'row',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 8,
     },

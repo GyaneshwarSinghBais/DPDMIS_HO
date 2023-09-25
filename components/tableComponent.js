@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { fetchMainCategoryService, fetchWarehouseStockReport } from './Services/apiService';
 import { useSelector } from 'react-redux';
@@ -17,37 +17,37 @@ const TableComponent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetchWarehouseStockReport(id,facid,"0");
+      const response = await fetchWarehouseStockReport(id, facid, "0");
       setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  
+
   const fetchDataWithMCAt = async () => {
     try {
-    
-      const response = await fetchWarehouseStockReport("0",facid,value);
+
+      const response = await fetchWarehouseStockReport("0", facid, value);
       setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  
+
   const fetchMainCategory = async () => {
-    try {    
-     //alert("main Cat:"+facid);
-    const stockReportDataDDL = await fetchMainCategoryService(facid);    
-    setDataDDL(stockReportDataDDL);
+    try {
+      //alert("main Cat:"+facid);
+      const stockReportDataDDL = await fetchMainCategoryService(facid);
+      setDataDDL(stockReportDataDDL);
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  useEffect(() => { 
-    fetchMainCategory();   
-  },[]
+  useEffect(() => {
+    fetchMainCategory();
+  }, []
   );
 
   const renderItem = ({ item, index }) => (
@@ -55,7 +55,7 @@ const TableComponent = () => {
       style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow]}
     >
 
-<View style={styles.cell}>
+      <View style={styles.cell}>
         <Text style={styles.cellText}>{index + 1}</Text>
       </View>
 
@@ -83,47 +83,49 @@ const TableComponent = () => {
   return (
     <View style={styles.container}>
 
-<View style={{ zIndex: 1000 }} >
-            {dataDDL.length > 0 ? (
-              <DropDownPicker
-                open={open}
-                value={value}
-                searchable={false}
-                items={dataDDL.map((item) => (
-                  {
-                    label: item.categoryname,
-                    value: item.categoryid,
-                  }))}
-                setOpen={setOpen}
-                setValue={setValue}
-                setItems={setData}
-                containerStyle={{ height: 20,width:200, }}
-                onChangeValue={(value) => {
-                  if (value != null) {
-                    setOldValue(value);
-                 
-                    if (value != oldValue) {
-                     // fetchDataItemStock();
-                   //  fetchData();
-                    }
+      <View style={StyleSheet.flatten([{ justifyContent: 'space-between', flexDirection: 'row', zIndex: 1000 }])} >
+        {dataDDL.length > 0 ? (
+          <DropDownPicker
+            open={open}
+            value={value}
+            searchable={false}
+            items={dataDDL.map((item) => (
+              {
+                label: item.categoryname,
+                value: item.categoryid,
+              }))}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setData}
+            containerStyle={{ height: 20, width: 200, }}
+            onChangeValue={(value) => {
+              if (value != null) {
+                setOldValue(value);
 
-                  }
+                if (value != oldValue) {
+                  // fetchDataItemStock();
+                  //  fetchData();
+                }
 
-                }}
-                dropDownContainerStyle={{ elevation: 1000, zIndex: 500 }}
-              />
-            ) : (
-              <Text>Loading data...</Text>
-            )
-            }
-             <TouchableOpacity style={styles.buttonAll} onPress={fetchDataWithMCAt}>
+              }
+
+            }}
+            dropDownContainerStyle={{ elevation: 1000, zIndex: 500 }}
+          />
+        ) : (
+          <Text>Loading data...</Text>
+        )
+
+        }
+
+        <TouchableOpacity style={styles.buttonAll} onPress={fetchDataWithMCAt}>
           <Text style={styles.buttonTextAll}>Show All</Text>
         </TouchableOpacity>
-          </View>
-          <View>
-<Text></Text>
-<Text></Text>
-</View>
+      </View>
+      <View>
+        <Text></Text>
+        <Text></Text>
+      </View>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -131,16 +133,16 @@ const TableComponent = () => {
           placeholder="Enter Code/Item Name"
           onChangeText={text => setId(text)}
           value={id}
-        /> 
+        />
         <TouchableOpacity style={styles.button} onPress={fetchData}>
           <Text style={styles.buttonText}>Show</Text>
         </TouchableOpacity>
-      
+
       </View>
 
       <View style={styles.header}>
-     
-      <Text style={styles.headerText}>SN</Text>  
+
+        <Text style={styles.headerText}>SN</Text>
         <Text style={styles.headerText}>Code</Text>
         <Text style={styles.headerText}>Item</Text>
         <Text style={styles.headerText}>SKU</Text>
@@ -163,15 +165,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   inputContainer: {
-    marginTop: 10,
+   
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
   input: {
     flex: 1,
-    marginTop: 20,
+  
     height: 40,
     borderColor: '#CCCCCC',
     borderWidth: 1,
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    marginTop: 20,
+  
     marginLeft: 10,
     padding: 10,
     backgroundColor: '#3377FF',
@@ -192,19 +194,18 @@ const styles = StyleSheet.create({
 
   buttonAll: {
 
-    marginTop: 40,
+    //marginTop: 40,
     paddingVertical: 10,
     backgroundColor: '#3377FF',
     borderRadius: 5,
-    width:100,
-    alignItems: 'left',
+    width: 100,
     textAlign: 'center',
-    alignSelf:'left',
-    
+   
   },
   buttonTextAll: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -234,14 +235,14 @@ const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   cellText: {
     fontSize: 14,
   },
   cardItemRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    //alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
   },

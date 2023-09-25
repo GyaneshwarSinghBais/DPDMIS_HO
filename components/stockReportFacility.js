@@ -154,7 +154,7 @@ const StockReportFacility = () => {
 <Text></Text>
 <Text></Text>
 </View>
-<View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
+<View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row', marginTop:-10 }])}>
           <TouchableOpacity style={styles.button} onPress={fetchData}>
           <Text style={styles.buttonText}>Show</Text>
         </TouchableOpacity>
@@ -184,30 +184,30 @@ const StockReportFacility = () => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: -25,  
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    
   },
   button: {
 
-    marginTop: 15,
+   
     paddingVertical: 10,
     backgroundColor: '#3377FF',
     borderRadius: 5,
     width:100,
-    alignItems: 'right',
-    textAlign: 'center',
-    alignSelf:'right',
-    
+   // alignItems: 'right',
+    textAlign: 'center', 
   },
   buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -237,7 +237,6 @@ const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
-    alignItems: 'center',
   },
   cellText: {
     fontSize: 14,
@@ -245,7 +244,6 @@ const styles = StyleSheet.create({
   cardItemRow: {
     marginTop: 15,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
