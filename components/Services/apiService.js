@@ -3,8 +3,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  //baseURL: "http://140.238.246.250:8080/api", // Server URL
-  baseURL: "https://localhost:7247/api", // Development URL
+  baseURL: "http://140.238.246.250:8080/api", // Server URL
+  //baseURL: "https://localhost:7247/api", // Development URL
 });
 
 export const loginUser = async (email, password) => {
@@ -30,19 +30,40 @@ export const loginUser = async (email, password) => {
 };
 
 
-export const fetchStockReport = async (facilityId) => {
+export const fetchStockReport = async (facilityId,itemid,iType) => {
   try {
-    const response = await api.get(`/CGMSCStock/stockReport?faclityId=${facilityId}`);
+    const response = await api.get(`/CGMSCStock/stockReport?faclityId=${facilityId}&itemid=${itemid}&catname=${iType}`);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const fetchWarehouseStockReport = async (searchKeyword, facilityid) => {
+export const fetchfacstockReportddl = async (facilityId) => {
   try {
-    const response = await api.get(`/CGMSCStock/concernWhStock?id=${searchKeyword}&facid=${facilityid}`);
-    //console.log(response.data);
+    const response = await api.get(`/CGMSCStock/facstockReportddl?faclityId=${facilityId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchMainCategoryService = async (facilityId) => {
+  try {
+   // alert("In Service Call"+facilityId);
+    const response = await api.get(`/CGMSCStock/getMainCategory?faclityId=${facilityId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchWarehouseStockReport = async (searchp,facilityid,mcatid) => {
+  try {
+  
+
+    const response = await api.get(`/CGMSCStock/WHstockReport?searchp=${searchp}&facid=${facilityid}&mcatid=${mcatid}`);
+ 
     return response.data;
   } catch (error) {
     throw error;
@@ -375,6 +396,28 @@ export const deleteReceiptItems = async (inwno,facReceiptItemId,itemid,receiptId
     throw error;
   }
 };
+
+
+export const fetchStockPerEDL = async (faclityId,Mcatid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getStockPerEDL?faclityId=${faclityId}&Mcatid=${Mcatid}`);
+    //alert("Response from fetchStockPerEDL: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchStockPerNonEDLAg_ApprovedAI = async (faclityId,Mcatid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getStockPerNonEDLAg_ApprovedAI?faclityId=${faclityId}&Mcatid=${Mcatid}`);
+    //alert("Response from fetchStockPerNonEDLAg_ApprovedAI: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 

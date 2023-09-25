@@ -26,6 +26,7 @@ import { useTheme } from 'react-native-paper';
 import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent';
 import WHReceiptItems from './FacilityOperation/WHReceiptItems';
 import WelcomeView from './WelcomeView';
+import StockOut from './StockRPT/StockOut';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -95,6 +96,7 @@ export function MyDrawer() {
       <Drawer.Screen name="Current Stock" component={StockReportFacility} />
       <Drawer.Screen name="Hold Stock" component={HoldStockRPT} />
       <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
+      <Drawer.Screen name="Stock Out" component={StockOut} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
       <Drawer.Screen name="Ward Issue Against Indent" component={IncompleteT4Indent} />
       <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />
