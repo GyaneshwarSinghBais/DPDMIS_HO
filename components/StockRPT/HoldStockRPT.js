@@ -10,9 +10,9 @@ const HoldStockRPT = () => {
     
   const fetchData = async () => {
     try {    
-        alert(JSON.stringify(id));   
+       // alert(JSON.stringify(id));   
     const StockRTPHold = await fetchHoldStockReport(id);    
-    alert(JSON.stringify(StockRTPHold));  
+    //alert(JSON.stringify(StockRTPHold));  
     setData(StockRTPHold);
     } catch (error) {
       console.error('Error:', error);

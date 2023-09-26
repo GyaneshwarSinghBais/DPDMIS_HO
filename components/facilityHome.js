@@ -27,6 +27,7 @@ import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent
 import WHReceiptItems from './FacilityOperation/WHReceiptItems';
 import WelcomeView from './WelcomeView';
 import StockOut from './StockRPT/StockOut';
+import StockOutDrillDown from './StockRPT/StockOutDrillDown';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -70,14 +71,14 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
-      <DrawerItem
+      {/* <DrawerItem
         label="Close drawer"
         onPress={() => props.navigation.closeDrawer()}
       />
       <DrawerItem
         label="Toggle drawer"
         onPress={() => props.navigation.toggleDrawer()}
-      />
+      /> */}
     </DrawerContentScrollView>
   );
 }
@@ -113,6 +114,10 @@ export function MyDrawer() {
       <Drawer.Screen name="Add New Receipt" component={WHReceiptItems} options={{
         drawerItemStyle: { display: 'none' }
       }} />
+       <Drawer.Screen name="Stock Out Detail" component={StockOutDrillDown} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
+
       <Drawer.Screen name="Logout" component={Logout} />
     </Drawer.Navigator>
   );

@@ -5,8 +5,7 @@ import { fetchMainCategoryService, fetchStockPerEDL, fetchStockPerNonEDLAg_Appro
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SegmentedButtons } from 'react-native-paper';
 
-
-const StockOut = () => {
+const StockOut = ({ navigation }) => {
     const informaitonAboutUser = useSelector((state) => state.user);
     const [Data, setData] = useState([]);
     const [edlData, setEdlData] = useState([]);
@@ -103,6 +102,14 @@ const StockOut = () => {
     }, [nonEdlData]
     );
 
+    const navigateFunction = () => {        
+        const isedl = (segmentValue == 'EDL')?'Y':'N';
+        const item1 = {"catid": value, "isedl":isedl}
+        //alert(testid);
+        //navigation.navigate("Add New Issue"); 
+        navigation.navigate('Stock Out Detail', { item: item1 });        
+    }
+
 
     return (
 
@@ -165,6 +172,8 @@ const StockOut = () => {
                 <TouchableOpacity style={StyleSheet.flatten([styles.button, { margin: 20 }])} onPress={fetchData}>
                     <Text style={styles.buttonText}>Show</Text>
                 </TouchableOpacity>
+
+                
             </View>
 
             {edlData.length > 0 ?
@@ -176,7 +185,7 @@ const StockOut = () => {
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out:</Text>
-                            <Text style={styles.value}>{edlData[0].stockout}</Text>
+                            <Text onPress={()=>navigateFunction()} style={styles.value}>{edlData[0].stockout}</Text>
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out %:</Text>
@@ -202,7 +211,7 @@ const StockOut = () => {
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out:</Text>
-                            <Text style={styles.value}>{nonEdlData[0].stockout}</Text>
+                            <Text onPress={()=>navigateFunction()} style={styles.value}>{nonEdlData[0].stockout}</Text>
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out %:</Text>

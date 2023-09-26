@@ -419,6 +419,19 @@ export const fetchStockPerNonEDLAg_ApprovedAI = async (faclityId,Mcatid) => {
 };
 
 
+export const fetchStockOutDrillDown = async (faclityId,Mcatid,isEDL) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getStockOutDrillDown?faclityId=${faclityId}&Mcatid=${Mcatid}&isEDL=${isEDL}`);
+    //alert("Response from fetchStockOutDrillDown: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
 
 
 
