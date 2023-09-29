@@ -429,6 +429,104 @@ export const fetchStockOutDrillDown = async (faclityId,Mcatid,isEDL) => {
   }
 };
 
+export const fetchFacilityIndentToWH = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getFacilityIndentToWH?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchWHissueToFacility = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getWHissueToFacility?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFacilityReceiptAgainstIndent = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getFacilityReceiptAgainstIndent?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchFacilityReceiptFromOtherFacilityOrLP = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getFacilityReceiptFromOtherFacilityOrLP?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFacilityWardIssue = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getFacilityWardIssue?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchFacilityIssueToOtherFacility = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getFacilityIssueToOtherFacility?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchFacilityIndentToWH: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchItemDetail = async (faclityId,yrid,itemid) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getItemDetail?faclityId=${faclityId}&yrid=${yrid}&itemid=${itemid}`);
+    //alert("Response from fetchItemDetail: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchYear = async () => {
+  try {   
+    const response = await api.get(`/CGMSCStock/getYear`);
+    //alert("Response from fetchYear: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const fetchFacilityAvailableItem = async (facilityId) => {
+  try {
+    //alert("Inset fetchIndentItems:" + indentId)
+    const response = await api.get(`/CGMSCStock/getFacilityAvailableItem?facilityId=${facilityId}`);
+    //alert("Response: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
+
 
 
 

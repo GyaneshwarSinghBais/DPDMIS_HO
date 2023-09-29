@@ -184,7 +184,7 @@ const StockOut = ({ navigation }) => {
                             <Text style={styles.value}>{edlData[0].totalnos}</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>Stock Out:</Text>
+                            <Text style={styles.label}>No of Stock Out:</Text>
                             <Text onPress={()=>navigateFunction()} style={styles.value}>{edlData[0].stockout}</Text>
                         </View>
                         <View style={styles.cardItem}>

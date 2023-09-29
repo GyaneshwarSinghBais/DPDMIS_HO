@@ -28,6 +28,7 @@ import WHReceiptItems from './FacilityOperation/WHReceiptItems';
 import WelcomeView from './WelcomeView';
 import StockOut from './StockRPT/StockOut';
 import StockOutDrillDown from './StockRPT/StockOutDrillDown';
+import FacilitySupplyChain from './StockRPT/FacilitySupplyChain';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
@@ -98,6 +99,7 @@ export function MyDrawer() {
       <Drawer.Screen name="Hold Stock" component={HoldStockRPT} />
       <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
       <Drawer.Screen name="Stock Out" component={StockOut} />
+      <Drawer.Screen name="Transaction Report" component={FacilitySupplyChain} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
       <Drawer.Screen name="Ward Issue Against Indent" component={IncompleteT4Indent} />
       <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />

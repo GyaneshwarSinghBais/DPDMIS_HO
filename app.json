@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "FacilityOnline",
-    "slug": "FacilityOnline",
+    "slug": "facilityonline",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon1.png",
@@ -29,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "5ecf594e-d5eb-4340-965c-4c7fff511c81"
+        "projectId": "a07653cd-ed66-48bc-b896-a7b0eae74747"
       }
-    }
+    },
+    "owner": "gyan9977"
   }
 }
