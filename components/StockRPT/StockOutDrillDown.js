@@ -19,7 +19,7 @@ const StockOutDrillDown = ({ navigation }) => {
 
     const fetchData = async () => {
         try {
-            alert("stockout drill down side page id: " + id + "categoryid: " + categoryId + " isedl: " + isEDL);
+            //alert("stockout drill down side page id: " + id + "categoryid: " + categoryId + " isedl: " + isEDL);
 
             const reportData = await fetchStockOutDrillDown(id, categoryId, isEDL);
             setData(reportData);

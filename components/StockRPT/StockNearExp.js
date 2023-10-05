@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList,RefreshControl } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -7,7 +7,7 @@ import { fetchCategory, fetchNearExpStockReport } from '../Services/apiService';
 import { Button } from 'react-native-paper';
 
 
-const NearExpStockRPT = () => {
+const NearExpStockRPT = (({ navigation }) => {
 
   const informaitonAboutUser = useSelector((state) => state.user);
   const [selectedValue, setSelectedValue] = useState(null);
@@ -18,23 +18,36 @@ const NearExpStockRPT = () => {
   const [ddlitem, setitemddl] = useState(null);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+
 
   const options = [
-    { label: '1 Month', value: '1' },
-    { label: '2 Months', value: '2' },
-    { label: '3 Months', value: '3' },
-    { label: '4 Months', value: '4' },
-    { label: '5 Months', value: '5' },
-    { label: '6 Months', value: '6' },
+    { label: '1 Month', value: '30' },
+    { label: '2 Months', value: '60' },
+    { label: '3 Months', value: '90' },
+    { label: '4 Months', value: '120' },
+    { label: '5 Months', value: '150' },
+    { label: '6 Months', value: '180' },
   ];
 
+  // const [selectedValue, setSelectedValue] = useState('');
 
-  const fetchData = async (idm, value, crit) => {
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+    setTimeout(() => {
+      setRefreshing(false);     
+    }, 2000);
+  }, []);
+
+
+  const fetchData = async () => {
     try {
       setLoading(true);
-      alert("id:" + idm + " category:" + value + " Criteria:" + crit);
-      const StockRPTEXP = await fetchNearExpStockReport(idm, value, crit)
-      alert(JSON.stringify(StockRPTEXP));
+      //alert("id:" + id + " Criteria:" + value);
+      const StockRPTEXP = await fetchNearExpStockReport(id, value)
+      //alert(JSON.stringify(StockRPTEXP));
       // alert(JSON.stringify(StockRPTEXP));  
       setData(StockRPTEXP);
     } catch (error) {
@@ -59,14 +72,14 @@ const NearExpStockRPT = () => {
 
 
 
-    if (value == 0 || value == null) {
-      alert("Please Category")
+    if (value === null) {
+      alert("Please Select Category")
       return;
     }
 
-    alert("CatID:" + value);
 
-    fetchData(id, value, "120");
+
+    fetchData( );
     //generate code
 
     // alert("successfully generated")
@@ -91,10 +104,26 @@ const NearExpStockRPT = () => {
   }, []
   );
 
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+
+
+
   const renderItem = ({ item, index }) => (
     <View
       style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow, styles.rowWithBorder]}
     >
+
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{index + 1}</Text>
+      </View>
+
       {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.categoryName}</Text>
       </View> */}
@@ -105,9 +134,9 @@ const NearExpStockRPT = () => {
         <Text style={styles.cellText}>{item.itemname}</Text>
       </View>
 
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.strength1}</Text>
-      </View>
+      {/* <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.strengtH1}</Text>
+      </View> */}
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.batchno}</Text>
@@ -136,26 +165,32 @@ const NearExpStockRPT = () => {
           {/* <Text style={styles.cardHeader}>Near Expiry Items</Text> */}
           <View style={{ flexDirection: "row" }}>
             <View style={{ zIndex: 1000, width: "70%", marginRight: 20 }} >
-             
-                  <DropDownPicker
-                  items={options}
-                  defaultValue={selectedValue}
-                  containerStyle={{ height: 40 }}
-                  style={{ backgroundColor: '#fafafa' }}
-                  itemStyle={{
-                    justifyContent: 'flex-start',
-                  }}
-                  dropDownStyle={{ backgroundColor: '#fafafa' }}
-                  onChangeItem={(item) => setSelectedValue(item.value)}
-                />
-           
+
+              <DropDownPicker
+                open={open}
+                value={value}
+                searchable={true}
+                items={options}
+                setOpen={setOpen}
+                setValue={setValue}
+                setItems={setData}
+                //defaultValue={selectedValue}
+                containerStyle={{ height: 40 }}
+                style={{ backgroundColor: '#fafafa' }}
+                itemStyle={{
+                  justifyContent: 'flex-start',
+                }}
+                dropDownStyle={{ backgroundColor: '#fafafa' }}
+                onChangeItem={(item) => setSelectedValue(item.value)}
+              />
+
 
             </View>
-            <View style={{ width: "25%", marginRight: 10, marginLeft: 0, marginBottom: 20 }}>
-              {/* <TouchableOpacity style={styles.button} onPress={() => ShowExpData(id)}>
+            <View style={{ width: "25%", marginRight: 10, marginLeft: 0, marginBottom: 20, marginTop: -15 }}>
+              <TouchableOpacity style={[styles.button, { width: 80 }]} onPress={() => ShowExpData(id)}>
                 <Text style={styles.buttonTextGenrate}>Show</Text>
-              </TouchableOpacity> */}
-              <Button
+              </TouchableOpacity>
+              {/* <Button
                 mode="contained"
                 icon="filter"
                 buttonColor="#728FCE"
@@ -165,7 +200,7 @@ const NearExpStockRPT = () => {
                 onPress={() => ShowExpData(id)}
               >
 
-              </Button>
+              </Button> */}
             </View>
           </View>
 
@@ -173,21 +208,30 @@ const NearExpStockRPT = () => {
 
 
 
-          <View style={styles.container}>
+          {/* <View style={styles.container}> */}
             <View style={styles.header}>
+            <Text style={styles.headerText}>S.No</Text>
               <Text style={styles.headerText}>Code</Text>
               <Text style={styles.headerText}>Item</Text>
-              <Text style={styles.headerText}>Strength</Text>
+              {/* <Text style={styles.headerText}>Strength</Text> */}
               <Text style={styles.headerText}>Batch No</Text>
               <Text style={styles.headerText}>Exp Date</Text>
               <Text style={styles.headerText}>Stock</Text>
             </View>
-            <FlatList
-              data={data}
-              keyExtractor={(_, index) => index.toString()}
-              renderItem={renderItem}
-            />
-          </View>
+            {data.length > 0 ?
+              <FlatList
+                data={data}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={renderItem}
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+              />
+              : <Text>Loading...</Text>
+            }
+
+          {/* </View> */}
+
 
         </View>
 
@@ -196,7 +240,7 @@ const NearExpStockRPT = () => {
 
   );
 }
-
+)
 const styles = StyleSheet.create
   ({
     container: {
@@ -204,6 +248,7 @@ const styles = StyleSheet.create
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'white',
+      marginTop:-10,
     },
     container2: {
       flex: 1,

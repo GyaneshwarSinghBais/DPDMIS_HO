@@ -8,8 +8,8 @@ import { TextInput, Button } from 'react-native-paper';
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("chcgujradmt@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$
-  const [password, setPassword] = useState("Dinesh#180278$");
+  const [email, setEmail] = useState("chcdongargarh@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$,chcdongargarh@dpdmis.in Cgmsc#123$
+  const [password, setPassword] = useState("Cgmsc#123$");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch(); // Initialize the useDispatch hook

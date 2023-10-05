@@ -3,7 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { fetchMainCategoryService, fetchStockPerEDL, fetchStockPerNonEDLAg_ApprovedAI, fetchStockReport } from '../Services/apiService';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { SegmentedButtons } from 'react-native-paper';
+import { SegmentedButtons, Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 const StockOut = ({ navigation }) => {
     const informaitonAboutUser = useSelector((state) => state.user);
@@ -21,7 +24,7 @@ const StockOut = ({ navigation }) => {
     const [edlDataLoaded, setEdlDataLoaded] = useState(false);
     const [nonEdlDataLoaded, setnonEdlDataLoaded] = useState(false);
     const [showButtonClicked, setShowButtonClicked] = useState(false);
-    const drpdwnValue = ["Drugs","Consumable & Others,","Reagents"];
+    const drpdwnValue = ["Drugs", "Consumable & Others,", "Reagents"];
 
 
     const fetchData = async () => {
@@ -35,14 +38,14 @@ const StockOut = ({ navigation }) => {
         }
 
         try {
-            if(segmentValue == 'EDL'){
+            if (segmentValue == 'EDL') {
                 fetchStockPerEDLData();
                 setNonEdlData([]);
-            }else{
+            } else {
                 fetchStockPerNonEDLAg_ApprovedAIData();
                 setEdlData([]);
             }
-            setShowButtonClicked(true);   
+            setShowButtonClicked(true);
 
         } catch (error) {
             console.error('Error:', error);
@@ -82,32 +85,38 @@ const StockOut = ({ navigation }) => {
     }, []
     );
 
-   
+
 
     useEffect(() => {
-        console.log(edlData);
-        if(edlData.length > 0)
-        {
-           console.log("use effect edl data");
-            setEdlDataLoaded(true); 
-        }      
+        //console.log(edlData);
+        if (edlData.length > 0) {
+           // console.log("use effect edl data");
+            setEdlDataLoaded(true);
+        }
     }, [edlData]
     );
 
     useEffect(() => {
-        if(nonEdlData.length > 0)
-        {
-            setnonEdlDataLoaded(true); 
-        }      
+        if (nonEdlData.length > 0) {
+            setnonEdlDataLoaded(true);
+        }
     }, [nonEdlData]
     );
 
-    const navigateFunction = () => {        
-        const isedl = (segmentValue == 'EDL')?'Y':'N';
-        const item1 = {"catid": value, "isedl":isedl}
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {          
+            setEdlData([]);
+            setNonEdlData([]);
+        });
+        return unsubscribe;
+      }, [navigation]);
+
+    const navigateFunction = () => {
+        const isedl = (segmentValue == 'EDL') ? 'Y' : 'N';
+        const item1 = { "catid": value, "isedl": isedl }
         //alert(testid);
         //navigation.navigate("Add New Issue"); 
-        navigation.navigate('Stock Out Detail', { item: item1 });        
+        navigation.navigate('Stock Out Detail', { item: item1 });
     }
 
 
@@ -165,7 +174,7 @@ const StockOut = ({ navigation }) => {
                         dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
                     />
                 ) : (
-                  <Text></Text>               
+                    <Text></Text>
                 )
                 }
 
@@ -173,7 +182,7 @@ const StockOut = ({ navigation }) => {
                     <Text style={styles.buttonText}>Show</Text>
                 </TouchableOpacity>
 
-                
+
             </View>
 
             {edlData.length > 0 ?
@@ -185,14 +194,19 @@ const StockOut = ({ navigation }) => {
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>No of Stock Out:</Text>
-                            <Text onPress={()=>navigateFunction()} style={styles.value}>{edlData[0].stockout}</Text>
+
+                            <Text onPress={() => navigateFunction()} icon="cursor-default-click" style={[styles.value, { color: '#0645AD', fontWeight: 900, textDecorationLine: 'underline', fontStyle: 'italic' }]}>
+                            <Icon name="arrow-right" size={18} color="#0645AD" /> 
+                            <Text>  </Text>
+                                {edlData[0].stockout}
+                            </Text>
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out %:</Text>
                             <Text style={styles.value}>{edlData[0].stockoutper} %</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of {drpdwnValue[value-1]} Available in Concern WH:</Text>
+                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Available in Concern WH:</Text>
                             <Text style={styles.value}>{edlData[0].stockinwh}</Text>
                         </View>
                     </View>
@@ -211,19 +225,19 @@ const StockOut = ({ navigation }) => {
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out:</Text>
-                            <Text onPress={()=>navigateFunction()} style={styles.value}>{nonEdlData[0].stockout}</Text>
+                            <Text onPress={() => navigateFunction()} style={styles.value}>{nonEdlData[0].stockout}</Text>
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out %:</Text>
                             <Text style={styles.value}>{nonEdlData[0].stockoutper} %</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of {drpdwnValue[value-1]} Available in Concern WH:</Text>
+                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Available in Concern WH:</Text>
                             <Text style={styles.value}>{nonEdlData[0].stockinwh}</Text>
                         </View>
                     </View>
                 </View> :
-                 <Text></Text>
+                <Text></Text>
                 //   (showButtonClicked && !nonEdlDataLoaded) ?
                 //   <Text>No Records Found</Text> : null
             }
@@ -247,7 +261,7 @@ const styles = StyleSheet.create({
     button: {
 
         marginTop: 15,
-        marginLeft:-15,
+        marginLeft: -15,
         paddingVertical: 10,
         backgroundColor: '#3377FF',
         borderRadius: 5,
@@ -255,13 +269,13 @@ const styles = StyleSheet.create({
         // alignItems: 'right',
         textAlign: 'center',
         // alignSelf: 'right',
-      
+
 
     },
     buttonText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
-        alignSelf:'center'
+        alignSelf: 'center'
     },
     header: {
         flexDirection: 'row',

@@ -32,7 +32,9 @@ export const loginUser = async (email, password) => {
 
 export const fetchStockReport = async (facilityId,itemid,iType) => {
   try {
+    //console.log("facilityId: " + facilityId + "itemid: " + "iType: " + iType);
     const response = await api.get(`/CGMSCStock/stockReport?faclityId=${facilityId}&itemid=${itemid}&catname=${iType}`);
+    //console.log(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
     throw error;
@@ -195,10 +197,9 @@ export const fetchHoldStockReport = async (facilityId) => {
 
 };
 
-export const fetchNearExpStockReport = async (facilityId, catid, criteria) => {
-  try {
-
-    const response = await api.get(`/CGMSCStock/getNearExpStock?faclityId=${facilityId}&catid=${catid}&criteria=${criteria}`);
+export const fetchNearExpStockReport = async (facilityId,  criteria) => {
+  try {  
+    const response = await api.get(`/CGMSCStock/getNearExpStock?faclityId=${facilityId}&criteria=${criteria}`);
     //alert(response.data);
     return response.data;
   } catch (error) {
@@ -523,6 +524,7 @@ export const fetchFacilityAvailableItem = async (facilityId) => {
     throw error;
   }
 };
+
 
 
 

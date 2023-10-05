@@ -41,6 +41,13 @@ const FacilitySupplyChain = ({ navigation }) => {
 
     //const drpdwnValue = ["Drugs", "Consumable & Others,", "Reagents"];
 
+    const resetDropdowns = () => {
+        // Reset the state variables for dropdown selections
+        setValueYr(null);
+        setValueItem(null);
+        // You can add other dropdown state variables here if needed
+      };
+
 
     const fetchData = async () => {
         if (valueYr == 0 || valueYr == null) {
@@ -162,6 +169,23 @@ const FacilitySupplyChain = ({ navigation }) => {
     );
 
 
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            //setDataDDLItem([]);
+            //setWHissueToFacility([]);    
+            resetDropdowns();        
+            setItemDetail([]);
+            setWHissueToFacility([]);
+            setWHissueToFacility([]);
+            setFacilityReceiptAgainstIndent([]);
+            setFacilityReceiptFromOtherFacilityOrLP([]);
+            setFacilityWardIssue([]);
+            setFacilityIssueToOtherFacility([]);
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+
 
     // useEffect(() => {
     //     console.log(edlData);
@@ -212,7 +236,7 @@ const FacilitySupplyChain = ({ navigation }) => {
                     ]}
                 />
             </View> */}
-            
+
             {dataDDLItem.length > 0 ? (
                 <DropDownPicker
                     open={openItem}

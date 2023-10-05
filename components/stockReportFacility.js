@@ -1,28 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList,RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { fetchStockReport, fetchfacstockReportddl } from './Services/apiService';
 import DropDownPicker from 'react-native-dropdown-picker';
-const StockReportFacility = () => {
+
+const StockReportFacility = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [lastPressButtonValue, setLastPressButtonValue] = useState('');
 
   const [dataDDL, setDataDDL] = useState([]);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [oldValue, setOldValue] = useState();
+
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    if(lastPressButtonValue == 'ALL') {
+      fetchData();
+    } else if(lastPressButtonValue == 'DRUGS'){
+      fetchDataDrugs();
+    } else {
+      fetchDataCons();
+    }
+  
+    setTimeout(() => {
+      setRefreshing(false);     
+    }, 2000);
+  }, []);
     
 
-  const fetchData = async () => {
-    if (value == 0 || value == null) {
-      alert("Please Select Item")
-      return;
-    }
+  const fetchData = async () => {   
     try {     
      // alert("itemid sukhdev:"+value);
     const stockReportData = await fetchStockReport(id,value,"V");    
     setData(stockReportData);
+    setLastPressButtonValue('ALL');
     
     } catch (error) {
       console.error('Error:', error);
@@ -33,6 +49,7 @@ const StockReportFacility = () => {
       //alert("itemid drugs:"+value);
     const stockReportData = await fetchStockReport(id,"0","D");    
     setData(stockReportData);
+    setLastPressButtonValue('DRUGS');
     fetchDataDDL();
     } catch (error) {
       console.error('Error:', error);
@@ -43,6 +60,7 @@ const StockReportFacility = () => {
     //  alert("itemid consumables:"+value);
     const stockReportData = await fetchStockReport(id,"0","C");    
     setData(stockReportData);
+    setLastPressButtonValue('CONSUMABLE');
     fetchDataDDL();
     } catch (error) {
       console.error('Error:', error);
@@ -64,6 +82,17 @@ const StockReportFacility = () => {
         //fetchData();
   },[]
   );
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setValue(null);    
+      setDataDDL([]);
+      setData([]);
+      fetchDataDDL(); 
+      
+    });
+    return unsubscribe;
+  }, [navigation]);
 
 
   const renderItem = ({ item, index }) => (
@@ -155,9 +184,9 @@ const StockReportFacility = () => {
 <Text></Text>
 </View>
 <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row', marginTop:-10 }])}>
-          <TouchableOpacity style={styles.button} onPress={fetchData}>
+          {/* <TouchableOpacity style={styles.button} onPress={fetchData}>
           <Text style={styles.buttonText}>Show</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.button} onPress={fetchDataDrugs}>
           <Text style={styles.buttonText}>Drugs</Text>
         </TouchableOpacity>
@@ -177,6 +206,9 @@ const StockReportFacility = () => {
         data={data}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList,RefreshControl } from 'react-native';
 import { fetchMainCategoryService, fetchWarehouseStockReport } from './Services/apiService';
 import { useSelector } from 'react-redux';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-const TableComponent = () => {
+const TableComponent = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState('');
   const [facid, setFacid] = useState(informaitonAboutUser.facilityid);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const [dataDDL, setDataDDL] = useState([]);
   const [open, setOpen] = useState(false);
@@ -49,6 +50,28 @@ const TableComponent = () => {
     fetchMainCategory();
   }, []
   );
+
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+    setTimeout(() => {
+      setRefreshing(false);     
+    }, 2000);
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setValue(null);
+      setDataDDL([]);
+      setData([]);
+      setId('');
+      // fetchData();
+       fetchMainCategory();
+      // fetchDataWithMCAt();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const renderItem = ({ item, index }) => (
     <View
@@ -154,6 +177,9 @@ const TableComponent = () => {
         data={data}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );
