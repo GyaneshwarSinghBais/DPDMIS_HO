@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button, Dialog, Portal, PaperProvider } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/FontAwesome';
 //import { ScrollView } from 'react-native-virtualized-view'
 //import { useNavigation } from '@react-navigation/native';
 import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
@@ -218,7 +219,7 @@ const IssueItemsAgainstIndent = ({ navigation, props }) => {
       </View> */}
 
       <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.status}</Text>
+        <Text onPress={() => navigateFunction(item)} style={styles.cellText}><Icon name="arrow-right" size={10} color="#0645AD" /></Text>
       </View>
 
     </View>

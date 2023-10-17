@@ -122,10 +122,11 @@ const StockOutDrillDown = ({ navigation }) => {
 
                 <View style={styles.header}>
                     <Text style={styles.headerText}>S.No</Text>
-                    <Text style={styles.headerText}>Ward</Text>
-                    <Text style={styles.headerText}>Issue Date</Text>
-                    <Text style={styles.headerText}>Issue No</Text>
-                    <Text style={styles.headerText}>Status</Text>
+                    <Text style={styles.headerText}>Code</Text>
+                    <Text style={styles.headerText}>Cat</Text>
+                    <Text style={styles.headerText}>Item</Text>
+                    <Text style={styles.headerText}>Strength</Text>
+                    <Text style={styles.headerText}>WH Stock</Text>
                 </View>
                 <FlatList
                     data={data}

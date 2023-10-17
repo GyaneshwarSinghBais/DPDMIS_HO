@@ -1,42 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, SafeAreaView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, FlatList, SafeAreaView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { Button, Dialog, Portal } from 'react-native-paper';
+import { Button, Dialog, Portal, PaperProvider } from 'react-native-paper';
 //import { ScrollView } from 'react-native-virtualized-view'
 //import { useNavigation } from '@react-navigation/native';
-import { deleteIncompleteIssueItems, deleteReceipts, deleteWardIssues, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchRacks, fetchReceiptDetails, fetchReceiptItemsDDL, fetchReceiptItemsDetail, fetchReceiptItms, fetchWardIssueItems, postWardIssue, putCompleteWardIssues, putReceipts } from '../Services/apiService';
+import { completemascgmscnoc, deleteCgmscNOCitems, deleteCgmscNOCitemsALL, deleteIncompleteIssueItems, deleteWardIssues, fetchFacMonthIndentItems, fetchIncompleteWardIssueItems, fetchIndentItems, fetchItemStock, fetchMainCategoryService, fetchSavedFacIndentItems, fetchStockPerEDL, fetchWardIssueItems, fetchfacIndentAlert1, postNOCitems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
 
 
-
-const WHReceiptItems = ({ navigation, props }) => {
-  const [refreshing, setRefreshing] = React.useState(false);
+const IncompleteWHIndentChild = ({ navigation, props }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
   const [FlatListData, setFlatListData] = useState([]);
-  //const [deleteData, setdeleteData] = useState([]);
+  const [deleteData, setdeleteData] = useState([]);
   const [itemStockData, setItemStockData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
-  const [stockQty, setStockQty] = useState(null);
+  // const [stockQty, setStockQty] = useState(null);
   // const [multipleInfo, setMultipleInfo] = useState(null);
-  const [issueQty, setIssueQty] = useState(null);
+  const [requestQty, setRequestQty] = useState(null);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [oldValue, setOldValue] = useState();
-  const [inwno, setinwno] = useState();
-  const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
-  const [receivedItemsGrid, setReceivedItemsGrid] = useState([]);
-  const [visible, setVisible] = React.useState(true);
-  const [receiptitems, setReceiptitems] = useState([]);
 
   const [open1, setOpen1] = useState(false);
   const [value1, setValue1] = useState(null);
   const [oldValue1, setOldValue1] = useState();
-  const [racks, setRacks] = useState([]);
 
-  //const [receiptDetails, setReceiptDetails] = useState([]);
+  //const [isItemStockDatSet, setIsItemStockDatSet] = useState(false);
+  const [savedFacilityIndentItemsData, setSavedFacilityIndentItemsData] = useState([]);
+  const [monthIndentItemsData, setMonthIndentItemsData] = useState([]);
+  const [indentAlertData, setIndentAlertData] = useState([]);
+
+  const [visible, setVisible] = React.useState(true);
 
   const hideDialog = () => setVisible(false);
 
@@ -63,67 +60,80 @@ const WHReceiptItems = ({ navigation, props }) => {
 
 
 
-  // const WARDNAME = route.params?.item.wardname;
-  // const WREQUESTBY = route.params?.item.wrequestby;
-  // const wrequestdate = route.params?.item.wrequestdate;
-  const RDATE = route.params?.item.facreceiptdate;
-  const RNO = route.params?.item.facreceiptno;
-  const WHID = route.params?.item.warehouseid;
-  const RECEIPTID = route.params?.item.facreceiptid;
+  //{"nocid":190796,"nositemsreq":15,"nosissued":0,"warehouseid":0,"reqDate":"05-OCT-23","reqno":"23413/NC00094/23-24","whissuedt":null,"istatus":"I","indentid":0,"facreceiptid":null}
+  const REQUESTID = route.params?.item.nocid;
+  const INDENTDATE = route.params?.item.reqDate;
+  const INDENTNO = route.params?.item.reqno;
   const INDENTID = route.params?.item.indentid;
+
 
   const handleSelect = (item) => {
     // alert("selected change");
     setSelectedItem(item);
   };
 
-  const ReceiveQtyEvent = async () => {
+  const RequestQtyEvent = async () => {
+    if (requestQty !== null && !isNaN(requestQty) && requestQty !== 0) {
+      const parsedQty = Number(requestQty);
+      const stockQty = indentAlertData[0].facstock;
+
+      // if (parsedQty > Number(indentAlertData[0].whready)) {
+      //   alert("Request quantity cannot be more than Warehouse Stock Qty.");
+      //   return;
+      // }
+
+      // alert("issueQty"+issueQty);
+      // alert("itemStockData[0].multiple"+itemStockData[0].multiple);
 
 
-    if (value1 == 0 || value1 == null) {
-      alert("Please Select Rack")
-      return;
+      const myReminder = (requestQty % indentAlertData[0].unitcount);
+
+
+      if (myReminder == 0) {
+
+
+
+        try {
+          const postData = {
+            sr: 0,
+            itemid: value1,
+            nocid: REQUESTID,
+            requestedqty: requestQty,
+            whstock: indentAlertData[0].whready,
+            //"cgmsclremarks": "test",
+            status: "IN",
+            //"approvedqty": 0,
+            //"bookedqty": 1000,
+            //"bookedflag": "B",
+            stockinhand: indentAlertData[0].facstock
+          };
+
+
+          const response = await postNOCitems(postData);
+          fetchSavedFacIndentItemsData();
+          setRequestQty(null);
+          fetchData();
+          alert("Successfull Requested " + parsedQty + " Quantity");
+        }
+        catch (error) {
+          console.error("Error posting request:", error);
+        }
+
+      } else {
+        alert("Enter Quantity Shoud be Multiple of" + indentAlertData[0].unitcount);
+      }
+    } else {
+      alert("Please Enter Valid Issue Quantity.");
     }
-
-
-
-
-
-
-
-
-
-    try {
-      const receiptData = {
-        facreceiptitemid: 0,
-        facreceiptid: RECEIPTID
-        // itemid: 0, //get value api side
-        // indentitemid: 2163804,
-        // absrqty: 1800
-      };
-
-
-      alert("Before posting: " + JSON.stringify(receiptData) + "value1: " + value1 + "value: " + value);
-      const response = await fetchReceiptItms(receiptData, value1, id, RECEIPTID, value);
-      fetchReceiptItems();
-      fetchRcptDetails();
-      alert("Item Successfull Received ");
-    }
-    catch (error) {
-      console.error("Error posting issue:", error);
-    }
-
-
-
   };
 
 
-  const deleteReceiptItems = async (itm) => {
-    try {
-      alert("before api call : " + JSON.stringify(itm))
-      const response = await deleteReceiptItems(itm.inwno, itm.facreceiptitemid, itm.itemid, itm.facreceiptid, itm.absrqty);
+  const deleteCgmscNOCitemsData = async (srid) => {
+    try {    
+      const response = await deleteCgmscNOCitems(srid);
       setdeleteData(response);
-      fetchRcptDetails();
+      fetchData();
+      fetchSavedFacIndentItemsData();
       alert("Item Deleted Successfully.");
     } catch (error) {
       console.error('Error:', error);
@@ -131,37 +141,12 @@ const WHReceiptItems = ({ navigation, props }) => {
   };
 
 
-
-
-
-
-  const fetchReceiptItems = async () => {
+  const fetchData = async () => {
     try {
-
-      const response = await fetchReceiptItemsDDL(id, RECEIPTID, INDENTID);
-      setReceiptitems(response);
-      //alert("id: "+ id);  
-      //alert("RECEIPTID: "+RECEIPTID);  
-      //alert("INDENTID: "+INDENTID);  
-      //alert(" inside fetchReceiptitems: " + JSON.stringify(response));
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const fetchRacksData = async () => {
-    try {
-      const response = await fetchRacks(id);
-      setRacks(response);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const fetchRcptDetails = async () => {
-    try {
-      const response = await fetchReceiptDetails("NO", id, RECEIPTID);
-      setReceivedItemsGrid(response);
+      //alert("Indent Id: " + INDENTID);
+      const response = await fetchMainCategoryService(id);
+      //alert(JSON.stringify(response));         
+      setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -169,31 +154,48 @@ const WHReceiptItems = ({ navigation, props }) => {
 
 
 
-  const fetchReceiptItemsDetailData = async () => {
+  const fetchDataItemStock = async () => {
     try {
-      //alert("id: " + id + "RECEIPTID: " + RECEIPTID + "inwno: " + inwno + "value: " + value);
-      const response = await fetchReceiptItemsDetail(id, RECEIPTID, INDENTID, value);
+      const response = await fetchItemStock(id, value, INDENTID);
       setItemStockData(response);
-      //alert("GetDataFroMDDL_Selection: "+response);  
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    fetchReceiptItems();
-    fetchReceiptItemsDetailData();
-    fetchRcptDetails();
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  const fetchSavedFacIndentItemsData = async () => {
+    try {
+      //alert("before call 1" + route.params?.item.nocid);
+      const response = await fetchSavedFacIndentItems(route.params?.item.nocid);
+      setSavedFacilityIndentItemsData(response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchFacMonthIndentItemsData = async () => {
+    try {
+      //alert("fetchFacMonthIndentItemsData childPage", id);
+      const response = await fetchFacMonthIndentItems(id, value, INDENTID);
+      //setIncompleteWardIssueItemsData(response);
+      setMonthIndentItemsData(response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const fetchfacIndentAlert1Data = async () => {
+    try {
+      const response = await fetchfacIndentAlert1(id, value, 'NA', value1);
+      setIndentAlertData(response);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   useEffect(() => {
-    fetchReceiptItems();
-    fetchRcptDetails();
-    //fetchRcptDetails();
+    fetchData();
+    fetchSavedFacIndentItemsData();
   }, []);
 
 
@@ -207,49 +209,41 @@ const WHReceiptItems = ({ navigation, props }) => {
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.itemcode}</Text>
-      </View>
-
-      <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemname}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.batchno}</Text>
+        <Text style={styles.cellText}>{item.stockinhand}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.absrqty}</Text>
+        <Text style={styles.cellText}>{item.whindentQTY}</Text>
       </View>
 
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.expdate}</Text>
+      
+      {/* <View style={styles.cell}>
+        <Text onPress={()=>alert(item.issueID)} style={styles.cellText}>{item.status}</Text>
+      </View> */}
+
+      <View >
+        {/* <Text   onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}>Delete</Text> */}
+        <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => deleteCgmscNOCitemsData(item.sr)} />
       </View>
 
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.locationno}</Text>
-      </View>
 
-      <View >        
-        <Button icon="delete-circle-outline" onPress={() => deleteReceiptItems(item)}  textColor="#D22B2B" style={{ width: 800, height: 800 }} ></Button>
-      </View>
-      <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.status}</Text>
-      </View>
 
     </View>
 
 
   );
 
-  useEffect(() => {
-    if (itemStockData.length > 0) {
-      // alert("itemStockData update : " + JSON.stringify(itemStockData));
-      // alert("itemStockData.itemid : " + JSON.stringify(itemStockData[0].itemid))
-      setIsItemStockDatSet(true);
-      fetchRcptDetails();
-    }
-  }, [itemStockData]);
+  // useEffect(()=>{
+  //   if(itemStockData.length > 0){
+  //     alert("itemStockData update : " + JSON.stringify(itemStockData));       
+  //     alert("itemStockData.itemid : "+ JSON.stringify(itemStockData[0].itemid))       
+  //     setIsItemStockDatSet(true);
+  //   }
+  // },[itemStockData]);
 
 
 
@@ -279,17 +273,11 @@ const WHReceiptItems = ({ navigation, props }) => {
   //     </View>
 
   const fnComplete = async () => {
-
-    if (receiptitems.length != 0) {
-      alert("Received all items first before pressing complete button");
-      return;
-    }
-
     try {
-
-      const response = await putReceipts(RECEIPTID);
+alert("inside fnComplete: "+ route.params?.item.nocid)
+      const response = await completemascgmscnoc(route.params?.item.nocid);
       alert("Completed Sucessfully !!");
-      navigation.navigate("Receipt From Warehouse");
+      navigation.navigate("Indent to Warehouse");
     } catch (error) {
       console.error('Error:', error);
     }
@@ -298,14 +286,14 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   const fnDelete = async () => {
     try {
-      const response = await deleteReceipts(RECEIPTID);
+      const response = await deleteCgmscNOCitemsALL(route.params?.item.nocid);
       alert("Deleted Sucessfully !!");
-      navigation.navigate("Receipt From Warehouse");
+      navigation.navigate("Indent to Warehouse");
       //setData(response);
     } catch (error) {
       console.error('Error:', error);
     }
-    // navigation.navigate("Ward Issue Against Indent");   
+    //navigation.navigate("Ward Issue Against Indent");   
   }
 
 
@@ -321,8 +309,8 @@ const WHReceiptItems = ({ navigation, props }) => {
 
   // ... (other parts of your code)
 
-  <TouchableOpacity style={styles.button} onPress={ReceiveQtyEvent}>
-    <Text style={styles.buttonText}>Add</Text>
+  <TouchableOpacity style={styles.button} onPress={RequestQtyEvent}>
+    <Text style={styles.buttonText}>Request</Text>
   </TouchableOpacity>
 
 
@@ -342,31 +330,29 @@ const WHReceiptItems = ({ navigation, props }) => {
              
               </View> */}
 
-          <View style={styles.card} refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
+          <View style={styles.card}>
             {/* <Text style={styles.cardHeader}>Ward Issues Against Indent</Text> */}
             <View style={styles.cardContent}>
+              <View style={styles.cardItem}>
+                <Text style={styles.label}>Request Id:</Text>
+                <Text style={styles.value}>{REQUESTID}</Text>
+              </View>
+              <View style={styles.cardItem}>
+                <Text style={styles.label}>Indent Date:</Text>
+                <Text style={styles.value}>{INDENTDATE}</Text>
+              </View>
+              <View style={styles.cardItem}>
+                <Text style={styles.label}>Indent No:</Text>
+                <Text style={styles.value}>{INDENTNO}</Text>
+              </View>
               {/* <View style={styles.cardItem}>
-                <Text style={styles.label}>Ward Name:</Text>
-                <Text style={styles.value}>{WARDNAME}</Text>
-              </View> */}
-              <View style={styles.cardItem}>
-                <Text style={styles.label}>Receipt Date:</Text>
-                <Text style={styles.value}>{RDATE}</Text>
-              </View>
-              <View style={styles.cardItem}>
-                <Text style={styles.label}>Receipt No:</Text>
-                <Text style={styles.value}>{RNO}</Text>
-              </View>
-              <View style={styles.cardItem}>
-                <Text style={styles.label}>Receipt Id:</Text>
-                <Text style={styles.value}>{RECEIPTID}</Text>
+                <Text style={styles.label}>Issue Id:</Text>
+                <Text style={styles.value}>{ISSUEID}</Text>
               </View>
               <View style={styles.cardItem}>
                 <Text style={styles.label}>Indent Id:</Text>
                 <Text style={styles.value}>{INDENTID}</Text>
-              </View>
+              </View> */}
             </View>
           </View>
 
@@ -375,38 +361,34 @@ const WHReceiptItems = ({ navigation, props }) => {
             {/* Selected Item: {selectedItem ? selectedItem.label : 'None'} */}
           </Text>
 
-          <View style={{ zIndex: 1000 }} >
-            {receiptitems.length > 0 ? (
+          <View style={{ zIndex: 1000, marginTop: 20 }} >
+            {data.length > 0 ? (
               <DropDownPicker
                 open={open}
                 value={value}
                 searchable={true}
-                items={receiptitems.map((item) => (
+                items={data.map((item) => (
                   {
-                    label: item.name,
-                    value: item.inwno,
+                    label: item.categoryname,
+                    value: item.categoryid,
                   }))}
                 setOpen={setOpen}
                 setValue={setValue}
-                setItems={setReceiptitems}
+                setItems={setData}
                 // defaultValue={selectedItem ? selectedItem.value : null}
                 containerStyle={{ height: 40 }}
                 onChangeValue={(value) => {
                   if (value != null) {
                     setOldValue(value);
-                    setinwno(value);
+
                     if (value != oldValue) {
-                      //alert("dropdown invoked");
-                      fetchReceiptItemsDetailData();
-                      fetchRacksData();
+                      fetchFacMonthIndentItemsData();
                       //incompleteWardIssueItemsData
                     }
 
                   }
 
                 }}
-
-
                 dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
               />
             ) : (
@@ -416,59 +398,89 @@ const WHReceiptItems = ({ navigation, props }) => {
           </View>
 
 
-          {itemStockData.length > 0 ? (
+          <View style={{ zIndex: 1000, marginTop: 20 }} >
+            {monthIndentItemsData.length > 0 ? (
+              <DropDownPicker
+                open={open1}
+                value={value1}
+                searchable={true}
+                items={monthIndentItemsData.map((item) => (
+                  {
+                    label: item.name,
+                    value: item.itemid,
+                  }))}
+                setOpen={setOpen1}
+                setValue={setValue1}
+                setItems={setMonthIndentItemsData}
+                // defaultValue={selectedItem ? selectedItem.value : null}
+                containerStyle={{ height: 40 }}
+                onChangeValue={(value) => {
+                  if (value != null) {
+                    setOldValue1(value);
+
+                    if (value != oldValue1) {
+                      fetchfacIndentAlert1Data();
+                      //fetchDataItemStock();
+                      //incompleteWardIssueItemsData
+                    }
+
+                  }
+
+                }}
+                dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
+              />
+            ) : (
+              <Text>Loading data...</Text>
+            )
+            }
+          </View>
+
+
+          {indentAlertData.length > 0 ? (
             <View style={styles.card}>
+              {/* <Text style={styles.cardHeader}>Item Issuance</Text> */}
               <View style={styles.cardContent}>
                 <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
-                  <Text style={styles.labelRow}>Receipt QTY: </Text>
-                  <Text style={styles.valueStock}>{itemStockData[0].name}</Text>
+                  <Text style={styles.labelRow}>Facility Stock: </Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].facstock}</Text>
+                  <Text>  |  </Text>
+                  <Text style={styles.labelRow}>Warehouse Stock: </Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].whready}</Text>
+                  <Text>  |   </Text>
+                  <Text style={styles.labelRow}>Unit Count:</Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].unitcount}</Text>
                 </View>
+                <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
+                  <Text style={styles.labelRow}>Annual Indent: </Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].aifacility}</Text>
+                  <Text>  |  </Text>
+                  <Text style={styles.labelRow}>Balance AI: </Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].balai}</Text>
+                  <Text>  |  </Text>
+                  <Text style={styles.labelRow}>Type: </Text>
+                  <Text style={styles.valueStock}>{indentAlertData[0].itemtypename}</Text>
+
+                </View>
+                {/* <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
+                  <Text style={styles.labelRow}>Indent QTY: </Text>
+                  <Text style={styles.valueStock}>{itemStockData[0].indentqty}</Text>
+                  <Text>     </Text>    
+                  <Text>     </Text>    
+                  <Text>     </Text>               
+                </View> */}
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label} >Rack : </Text>
-
-
-                <View style={{ zIndex: 1000, width: 175, marginRight: 10 }} >
-                  {receiptitems.length > 0 ? (
-                    //Rack Dropdown
-                    <DropDownPicker
-                      open={open1}
-                      value={value1}
-                      searchable={true}
-                      items={racks.map((item) => (
-                        {
-                          label: item.locationno,
-                          value: item.rackid,
-                        }))}
-                      setOpen={setOpen1}
-                      setValue={setValue1}
-                      setItems={setRacks}
-                      // defaultValue={selectedItem ? selectedItem.value : null}
-                      containerStyle={{ height: 40 }}
-                      onChangeValue={(value1) => {
-                        if (value1 != null) {
-                          setOldValue1(value);
-                          //setinwno(value);
-                          if (value1 != oldValue1) {
-                            //alert("dropdown invoked");
-                            //fetchReceiptItemsDetailData();
-                            //incompleteWardIssueItemsData
-                          }
-
-                        }
-                      }}
-                      dropDownContainerStyle={{ elevation: 1000, zIndex: 1000 }}
-                      dropDownPosition="top"
-                    />
-                  ) : (
-                    <Text>Loading data...</Text>
-                  )
-                  }
-                </View>
-
-                <TouchableOpacity style={styles.button} onPress={() => ReceiveQtyEvent()}>
-                  <Text style={styles.buttonText}>Add</Text>
+                <Text style={styles.label} >Request QTY : </Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder={"Multiple of:   X " + indentAlertData[0].unitcount}
+                  keyboardType="numeric"
+                  onChangeText={text => setRequestQty(text)}
+                  value={requestQty}
+                />
+                <TouchableOpacity style={styles.button} onPress={() => RequestQtyEvent()}>
+                  <Text style={styles.buttonText}>Request</Text>
                 </TouchableOpacity>
               </View>
 
@@ -477,7 +489,7 @@ const WHReceiptItems = ({ navigation, props }) => {
             </View>) : (
             <View>
               <Text>
-
+                {/* Loding Item Details ... */}
               </Text>
             </View>
           )}
@@ -488,17 +500,15 @@ const WHReceiptItems = ({ navigation, props }) => {
           <View style={styles.containerGrid}>
             <View style={styles.header}>
               <Text style={styles.headerText}>S.No</Text>
-              <Text style={styles.headerText}>Code</Text>
               <Text style={styles.headerText}>Item</Text>
-              <Text style={styles.headerText}>Qty</Text>
-              <Text style={styles.headerText}>Batch No.</Text>
-              <Text style={styles.headerText}>Exp Date</Text>
-              <Text style={styles.headerText}>Rack</Text>
-              <Text style={styles.headerText}>Delete</Text>
+              <Text style={styles.headerText}>Stock</Text>
+              <Text style={styles.headerText}>indent Qty</Text>
+              <Text style={styles.headerText}>Status</Text>
+              {/* <Text style={styles.headerText}>Action</Text> */}
             </View>
             <View style={{ flex: 1 }}>
               <FlatList
-                data={receivedItemsGrid}
+                data={savedFacilityIndentItemsData}
                 keyExtractor={(_, index) => index.toString()}
                 renderItem={renderItem}
               />
@@ -520,7 +530,6 @@ const WHReceiptItems = ({ navigation, props }) => {
               <Button icon="delete" mode="contained-tonal" buttonColor="#ff0000" textColor="#FFFFFF" onPress={() => fnDelete()}>
                 Delete
               </Button>
-             
             </View>
           </View>
         </View>
@@ -529,7 +538,7 @@ const WHReceiptItems = ({ navigation, props }) => {
       {/* <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
           <Dialog.Actions>
-            <Button onPress={() => console.log('Cancel')} style={{ color: 'red' }}>Cancel</Button>
+            <Button onPress={() => console.log('Cancel')} style={{color:'red'}}>Cancel</Button>
             <Button onPress={() => console.log('Ok')}>Ok</Button>
           </Dialog.Actions>
         </Dialog>
@@ -575,7 +584,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     padding: 16,
-    // marginTop: 100,
 
   },
 
@@ -704,4 +712,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default WHReceiptItems
+export default IncompleteWHIndentChild

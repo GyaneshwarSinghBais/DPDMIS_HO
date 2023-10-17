@@ -123,17 +123,18 @@ const NearExpStockRPT = (({ navigation }) => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{index + 1}</Text>
       </View>
-
+      <Text style={styles.cellText}>|</Text>
       {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.categoryName}</Text>
       </View> */}
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemcode}</Text>
       </View>
+      <Text style={styles.cellText}>|</Text>
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.itemname}</Text>
       </View>
-
+      <Text style={styles.cellText}>|</Text>
       {/* <View style={styles.cell}>
         <Text style={styles.cellText}>{item.strengtH1}</Text>
       </View> */}
@@ -141,13 +142,13 @@ const NearExpStockRPT = (({ navigation }) => {
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.batchno}</Text>
       </View>
-
+      <Text style={styles.cellText}>|</Text>
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.expdate}</Text>
       </View>
 
-
+      <Text style={styles.cellText}>|</Text>
 
       <View style={styles.cell}>
         <Text style={styles.cellText}>{item.facstock}</Text>
@@ -211,11 +212,16 @@ const NearExpStockRPT = (({ navigation }) => {
           {/* <View style={styles.container}> */}
             <View style={styles.header}>
             <Text style={styles.headerText}>S.No</Text>
+            <Text style={styles.headerText}>|</Text>
               <Text style={styles.headerText}>Code</Text>
+              <Text style={styles.headerText}>|</Text>
               <Text style={styles.headerText}>Item</Text>
+              <Text style={styles.headerText}>|</Text>
               {/* <Text style={styles.headerText}>Strength</Text> */}
-              <Text style={styles.headerText}>Batch No</Text>
-              <Text style={styles.headerText}>Exp Date</Text>
+              <Text style={styles.headerText}>Batch</Text>
+              <Text style={styles.headerText}>|</Text>
+              <Text style={styles.headerText}>Ex DT</Text>
+              <Text style={styles.headerText}>|</Text>
               <Text style={styles.headerText}>Stock</Text>
             </View>
             {data.length > 0 ?
@@ -285,6 +291,7 @@ const styles = StyleSheet.create
     headerText: {
       flex: 1,
       fontWeight: 'bold',
+      fontSize:12,
       textAlign: 'center',
     },
     row: {
@@ -305,7 +312,7 @@ const styles = StyleSheet.create
       alignItems: 'center',
     },
     cellText: {
-      fontSize: 14,
+      fontSize: 10,
     },
     buttonTextGenrate: {
       color: 'white',

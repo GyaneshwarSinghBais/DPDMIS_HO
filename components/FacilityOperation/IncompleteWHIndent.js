@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList,ScrollView,SafeAreaView,RefreshControl} from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, SafeAreaView, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchIncompleteWardIssue } from '../Services/apiService';
+import { fetchIndenttoWH } from '../Services/apiService';
 import StockReportFacility from '../stockReportFacility';
 import NewWardIssue from './NewWardIssue';
 import { TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 
-const IncompleteWardIssue = ({ navigation }) => {
+const IncompleteWHIndent = ({ navigation }) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const informaitonAboutUser = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [id, setId] = useState(informaitonAboutUser.facilityid);
 
-  
-    
+
+
 
   const fetchData = async () => {
-    try {     
-    const stockReportData = await fetchIncompleteWardIssue(id);    
-    setData(stockReportData);
+    try {
+      const CompIncompIndentToWH = await fetchIndenttoWH(id, "I");
+      setData(CompIncompIndentToWH);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -30,18 +31,18 @@ const IncompleteWardIssue = ({ navigation }) => {
     setRefreshing(true);
     fetchData();
     setTimeout(() => {
-      setRefreshing(false);     
+      setRefreshing(false);
     }, 2000);
   }, []);
 
-  useEffect(() => {    
-        fetchData();
-  },[]
+  useEffect(() => {
+    fetchData();
+  }, []
   );
 
   const unsubscribe = navigation.addListener('focus', () => {
     fetchData();
- });
+  });
 
 
   const renderItem = ({ item, index }) => (
@@ -49,91 +50,97 @@ const IncompleteWardIssue = ({ navigation }) => {
       style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow, styles.rowWithBorder]}
     >
 
-     <View style={styles.cell}>
-        <Text style={styles.cellText}>{index+1}</Text>
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{index + 1}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.wardname}</Text>
+        <Text style={styles.cellText}>{item.reqDate}</Text>
       </View>
 
       {/* <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.wRequestBy}</Text>
+        <Text style={styles.cellText}>{item.indentid}</Text>
       </View>
 
       <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.wRequestDate}</Text>
-      </View> */}
-
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issuedate}</Text>
-      </View>
-
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.issueno} </Text>
+        <Text style={styles.cellText}>{item.warehouseid}</Text>
       </View>
 
       
+
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.nocid}</Text>
+      </View> */}
+
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.nositemsreq}/{item.nosissued}</Text>
+      </View>
+
+      <View style={styles.cell}>
+        <Text style={styles.cellText}>{item.whissuedt}</Text>
+      </View>
+
+
       {/* <View style={styles.cell}>
         <Text onPress={()=>alert(item.issueID)} style={styles.cellText}>{item.status}</Text>
       </View> */}
 
-    <View style={styles.cell}>
-        <Text onPress={()=>navigateFunction(item)} style={styles.cellText}> <Icon name="arrow-right" size={10} color="#0645AD" /></Text>
+      <View style={styles.cell}>
+        <Text onPress={() => navigateFunction(item)} style={[styles.cellText,{width:25,height:25}]}>{(item.istatus) == "I" ?  <Icon name="link" size={18} color="#0000FF" /> : "C"} </Text>
       </View>
-     
+
     </View>
 
-    
+
   );
 
-const navigateFunction = (item) => {
+  const navigateFunction = (item) => {
     //alert(testid);
-    //navigation.navigate("Add New Issue"); 
-    navigation.navigate('Add New Issue', { item: item });
-}
+    //console.log("inside item: " + JSON.stringify(item));
+    navigation.navigate('Warehouse Indent', { item: item });
+  }
 
-const navigationFunctionForAdd = () => {
-   navigation.navigate('AddWardIssueMaster');
-}
+  const navigationFunctionForAdd = () => {
+    navigation.navigate('Add New Indent');
+  }
 
 
   return (
-    
+
     <SafeAreaView style={styles.container1}>
-    {/* <ScrollView
+      {/* <ScrollView
       contentContainerStyle={styles.scrollView1}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }> */}
 
-    <View style={styles.container}>    
+      <View style={styles.container}>
 
-<View style={{width:200,alignSelf:'center',padding:10}}>
-<TouchableOpacity style={styles.button} onPress={navigationFunctionForAdd}>
-          <Text style={styles.buttonText}>Add New Issuance</Text>
-        </TouchableOpacity>
+        <View style={{ width: 200, alignSelf: 'center', padding: 10 }}>
+          <TouchableOpacity style={styles.button} onPress={navigationFunctionForAdd}>
+            <Text style={styles.buttonText}>Add New Indent</Text>
+          </TouchableOpacity>
         </View>
 
-      <View style={styles.header}>   
-      <Text style={styles.headerText}>S.No</Text>    
-        <Text style={styles.headerText}>Ward</Text>
-        {/* <Text style={styles.headerText}>Request By</Text>        
+        <View style={styles.header}>
+          <Text style={styles.headerText}>S.No</Text>
+          <Text style={styles.headerText}>Indent DT</Text>
+          {/* <Text style={styles.headerText}>Request By</Text>        
         <Text style={styles.headerText}>Request Date</Text> */}
-        <Text style={styles.headerText}>Issue Date</Text>      
-        <Text style={styles.headerText}>Issue No</Text> 
-        <Text style={styles.headerText}>Action</Text> 
+          <Text style={styles.headerText}>Indented/Issued Items</Text>
+          <Text style={styles.headerText}>WH Issue DT</Text>
+          <Text style={styles.headerText}>Action</Text>
+        </View>
+        <FlatList
+          data={data}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={renderItem}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
-      <FlatList
-        data={data}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={renderItem}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-    </View>
-    {/* </ScrollView> */}
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
@@ -180,7 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRightWidth: 1,
     borderRightColor: '#CCCCCC',
-    padding:5,
+    padding: 5,
   },
   cellText: {
     fontSize: 11,
@@ -205,7 +212,7 @@ const styles = StyleSheet.create({
 
     justifyContent: 'center',
   },
-  
+
 });
 
-export default IncompleteWardIssue;
+export default IncompleteWHIndent;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ImageBackground } from "react-native";
+import { StyleSheet, Text, View, ImageBackground, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 import { setUser } from "./app/userSlice";
 import { useDispatch } from "react-redux"; // Import the useDispatch hook
@@ -8,7 +8,7 @@ import { TextInput, Button } from 'react-native-paper';
 
 
 const LoginPage = ({ navigation }) => {
-  const [email, setEmail] = useState("chcdongargarh@dpdmis.in");   //chcbadekilepal@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$,chcdongargarh@dpdmis.in Cgmsc#123$
+  const [email, setEmail] = useState("chcdongargarh@dpdmis.in");   //chcbadekilepal@dpdmis.in,afu29439@dpdmis.in   Cgmsc#123$, chcgujradmt@dpdmis.in Dinesh#180278$, uphcamasivani@dpdmis.in Cgmsc#123$,chcdongargarh@dpdmis.in Cgmsc#123$
   const [password, setPassword] = useState("Cgmsc#123$");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -81,12 +81,18 @@ const LoginPage = ({ navigation }) => {
 
   return (
 
-    <ImageBackground source={require("./assets/background.jpg")}
+    <ImageBackground source={require("./assets/background7.jpg")}
       style={styles.backgroundImage}
     >
+      <View style={[styles.containerHeader, { marginBottom: -600, marginTop: -150, }]}>
+        <Text style={[styles.title, { color: '#003136', marginBottom: 2 }]}>Health Facility Store</Text>
+        <Text style={[styles.title, { color: '#003136', fontSize: 12, paddingTop: -10000 }]}> An Initiative for Supply Chain Management  </Text>
+        <Image source={require("./assets/cglogo.png")} />
 
-      <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+      </View>
+
+      <View style={[styles.container,{marginTop:200}]}>
+
         {errorMessage !== "" && <Text style={styles.errorText}>{errorMessage}</Text>}
         {/* <TextInput
         placeholder="Email"
@@ -96,8 +102,8 @@ const LoginPage = ({ navigation }) => {
       /> */}
         <TextInput
           mode="outlined"
-          label="Email"
-          placeholder="Email"
+          label="User Id"
+          placeholder="User Id"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
@@ -115,7 +121,7 @@ const LoginPage = ({ navigation }) => {
 
         <Button
           mode="contained"
-          buttonColor="#728FCE"
+          buttonColor="#003136"
           textColor="#FFFFFF"
           labelStyle={styles.buttonLabel}
           onPress={onLogin}
@@ -123,9 +129,21 @@ const LoginPage = ({ navigation }) => {
         >
           Login
         </Button>
+
+        {/* <Text style={[styles.title, { color: '#800000', fontSize: 12, paddingTop: 15 }]}>Brought To You By, </Text> */}
+        <View style={StyleSheet.flatten([styles.cardItemRow, { justifyContent: 'space-between', flexDirection: 'row' }])}>
+          {/* <Image style={[{ width: 50, height: 50 }]} source={require("./assets/cgmsc.png")} /> */}
+          <Text style={[styles.title, { color: '#003136', fontSize: 14, marginBottom: 2, marginTop:50}]}>  Chhattigarh Medical Services Corporation Ltd, </Text>
+        </View>
+        <Text style={[styles.title, { color: '#003136', fontSize: 12, paddingTop: -10 }]}> Department of Health & Familiy Welfare, Chhattisgarh </Text>
+        <Text style={[styles.title, { color: '#800000', fontSize: 12, paddingTop: -50 }]}> Version: 2.0</Text>
       </View>
 
-    </ImageBackground>
+  
+
+
+
+    </ImageBackground >
   );
 };
 
@@ -140,6 +158,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
+  },
+  containerHeader: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    // padding: 20,
   },
   title: {
     fontSize: 24,
@@ -157,6 +181,19 @@ const styles = StyleSheet.create({
     color: "red",
     marginTop: 10,
     textAlign: "center",
+  },
+  logo: {
+    // width: 100, 
+    // height: 100, 
+  },
+  cardContent: {
+    flexDirection: 'column',
+  },
+  cardItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
 });
 

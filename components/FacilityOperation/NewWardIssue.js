@@ -4,10 +4,12 @@ import { useSelector } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Button } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { deleteIncompleteIssueItems, deleteWardIssues, fetchIncompleteWardIssueItems, fetchItemStock, fetchWardIssueItems, postWardIssue, putCompleteWardIssues } from '../Services/apiService';
 
 
-const NewWardIssue = ( {navigation}) => {
+
+const NewWardIssue = ({ navigation }) => {
   const informaitonAboutUser = useSelector((state) => state.user);
   const [selectedItem, setSelectedItem] = useState(null);
   const [data, setData] = useState([]);
@@ -38,8 +40,17 @@ const NewWardIssue = ( {navigation}) => {
   };
 
   const fnComplete = async () => {
+
+    //check grid should be data
+   
+    if (incompleteWardIssueItemsData.length == 0) {
+      alert("No Item Issued yet with this Voucher.");
+      return;
+    }   
+
+
     try {
-      
+
       const response = await putCompleteWardIssues(issueID);
       alert("Completed Sucessfully !!");
       navigation.navigate("Ward Issue");
@@ -50,10 +61,10 @@ const NewWardIssue = ( {navigation}) => {
   }
 
   const fnDelete = async () => {
-    try {      
+    try {
       const response = await deleteWardIssues(issueID);
       alert("Deleted Sucessfully !!");
-       navigation.navigate("Ward Issue");    
+      navigation.navigate("Ward Issue");
       //navigation.navigate.goBack();
       //setData(response);
     } catch (error) {
@@ -153,7 +164,9 @@ const NewWardIssue = ( {navigation}) => {
       </View>
 
       <View style={styles.cell}>
-        <Text onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}>Delete</Text>
+        {/* <Text onPress={() => deleteIncompIssueItems(item.issueItemID)} style={styles.buttonTextDelete}> <Icon name="minus" size={18} color="#D22B2B" /> </Text> */}
+        <Button icon="delete-circle-outline" onPress={() => deleteIncompIssueItems(item.issueItemID)} textColor="#D22B2B" style={{ width: 800, height: 800 }} >
+        </Button>
       </View>
 
 
@@ -205,7 +218,7 @@ const NewWardIssue = ( {navigation}) => {
   //       <Text style={styles.cellText}>{item.issueNo}</Text>
   //     </View>
 
- 
+
 
   const IssueQtyEvent = async () => {
     if (issueQty !== null && !isNaN(issueQty) && issueQty !== 0) {
@@ -326,7 +339,7 @@ const NewWardIssue = ( {navigation}) => {
                   if (value != null) {
                     setOldValue(value);
                     if (value != oldValue) {
-                      alert("onchangeValue Called, after it fetchDataItemStock() will be called")
+                      //alert("onchangeValue Called, after it fetchDataItemStock() will be called")
                       fetchDataItemStock();
                       //incompleteWardIssueItemsData
                     }

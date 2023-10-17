@@ -18,10 +18,11 @@ function WelcomeView() {
         />
         <View style={styles.textContainer}>
           <Text style={styles.welcomeText}>
+            {/* {JSON.stringify(informaitonAboutUser)} */}
             Welcome, {informaitonAboutUser.firstname}!
           </Text>
           <Text style={styles.emailText}>
-            Email: {informaitonAboutUser.emailid}
+            User Id: {informaitonAboutUser.emailid}
           </Text>
         </View>
       </View>
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
       color: '#800000',
     },
     emailText: {
-      fontSize: 16,
+      fontSize: 14,
       marginTop: 10,
       color: '#800080',
     },

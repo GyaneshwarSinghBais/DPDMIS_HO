@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
-import { fetchMainCategoryService, fetchStockPerEDL, fetchStockPerNonEDLAg_ApprovedAI, fetchStockReport } from '../Services/apiService';
+import { fetchMainCategoryService, fetchStockPerEDL, fetchStockPerNonEDLAg_ApprovedAI, fetchfacIndentAlert } from '../Services/apiService';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { SegmentedButtons, Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 
-const StockOut = ({ navigation }) => {
+const IndentAlert = ({ navigation }) => {
     const informaitonAboutUser = useSelector((state) => state.user);
-    const [Data, setData] = useState([]);
-    const [edlData, setEdlData] = useState([]);
-    const [nonEdlData, setNonEdlData] = useState([]);
+    const [data, setData] = useState([]);
+    const [edlData, setEdlData] = useState(false);
+    const [nonEdlData, setNonEdlData] = useState(false);
     const [id, setId] = useState(informaitonAboutUser.facilityid);
 
     const [dataDDL, setDataDDL] = useState([]);
@@ -26,6 +26,8 @@ const StockOut = ({ navigation }) => {
     const [showButtonClicked, setShowButtonClicked] = useState(false);
     const drpdwnValue = ["Drugs", "Consumable & Others,", "Reagents"];
 
+    const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
         if (value == 0 || value == null) {
@@ -38,31 +40,52 @@ const StockOut = ({ navigation }) => {
         }
 
         try {
+            setLoading(true);
             if (segmentValue == 'EDL') {
-                fetchStockPerEDLData();
-                setNonEdlData([]);
+                // fetchStockPerEDLData();
+                await fetchEDLIAlert();
+                setNonEdlData(false);
+                setEdlData(true);
             } else {
-                fetchStockPerNonEDLAg_ApprovedAIData();
-                setEdlData([]);
+                await fetchNonEDLIAlert();
+                setNonEdlData(true);
+                setEdlData(false);
             }
             setShowButtonClicked(true);
 
         } catch (error) {
             console.error('Error:', error);
+        } finally {
+            setLoading(false);
         }
     };
-    const fetchStockPerEDLData = async () => {
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        if (edlData == true) {
+            fetchEDLIAlert();
+        } else {
+            fetchNonEDLIAlert();
+        }
+
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
+    }, []);
+
+    const fetchEDLIAlert = async () => {
         try {
-            const resultData = await fetchStockPerEDL(id, value);
-            setEdlData(resultData);
+
+            const resultData = await fetchfacIndentAlert(id, value, "Y");
+            setData(resultData);
         } catch (error) {
             console.error('Error:', error);
         }
     };
-    const fetchStockPerNonEDLAg_ApprovedAIData = async () => {
+    const fetchNonEDLIAlert = async () => {
         try {
-            const resultData = await fetchStockPerNonEDLAg_ApprovedAI(id, value);
-            setNonEdlData(resultData);
+            // alert("call Non EDL data");
+            const resultData = await fetchfacIndentAlert(id, value, "N");
+            setData(resultData);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -105,8 +128,9 @@ const StockOut = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            setEdlData([]);
-            setNonEdlData([]);
+            setData([]);
+            setValue(null);
+
         });
         return unsubscribe;
     }, [navigation]);
@@ -118,6 +142,35 @@ const StockOut = ({ navigation }) => {
         //navigation.navigate("Add New Issue"); 
         navigation.navigate('Stock Out Detail', { item: item1 });
     }
+
+
+
+    const renderItem = ({ item, index }) => (
+        <View
+            style={[styles.row, index % 2 === 0 ? styles.evenRow : styles.oddRow]}
+        >
+
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{index + 1}</Text>
+            </View>
+
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{item.itemcode}</Text>
+            </View>
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{item.itemname}</Text>
+            </View>
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{item.facstock}</Text>
+            </View>
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{item.approvedaicmho}</Text>
+            </View>
+            <View style={styles.cell}>
+                <Text style={styles.cellText}>{item.facreqfoR3MONTH}</Text>
+            </View>
+        </View>
+    );
 
 
     return (
@@ -159,13 +212,13 @@ const StockOut = ({ navigation }) => {
                         setOpen={setOpen}
                         setValue={setValue}
                         setItems={setData}
-                        containerStyle={{ height: 30, width: 200, margin: 20 }}
+                        containerStyle={{ height: 30, width: '90%', margin: 20 }}
                         onChangeValue={(value) => {
                             if (value != null) {
                                 setOldValue(value);
                                 if (value != oldValue && oldValue != undefined) {
                                     //alert("ddl invoked: value" + value + "old value: " + oldValue);
-                                    fetchData();
+                                    //fetchData();
                                 }
 
                             }
@@ -178,26 +231,40 @@ const StockOut = ({ navigation }) => {
                 )
                 }
 
-                <TouchableOpacity style={StyleSheet.flatten([styles.button, { margin: 20 }])} onPress={fetchData}>
+                {/* <TouchableOpacity style={StyleSheet.flatten([styles.button, { margin: 20 }])} onPress={fetchData}>
                     <Text style={styles.buttonText}>Show</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
+
 
 
             </View>
+            <View style={{ marginTop: 20, marginBottom: 20, marginLeft: 10, marginRight: 10 }}>
+                <Button
+                    mode="contained"
+                    buttonColor="#728FCE"
+                    textColor="#FFFFFF"
+                    labelStyle={styles.buttonLabel}
+                    onPress={fetchData}
+                    loading={loading}
+                >
+                    Show
+                </Button>
+            </View>
 
-            {edlData.length > 0 ?
+            {/* {edlData.length > 0 ?
                 <View style={styles.card}>
                     <View style={styles.cardContent}>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>Total No of EDL For Facility:</Text>
+                            <Text style={styles.label}>Total No EDL:</Text>
                             <Text style={styles.value}>{edlData[0].totalnos}</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of Stock Out on Above:</Text>
+                            <Text style={styles.label}>No of Stock Out:</Text>
 
                             <Text onPress={() => navigateFunction()} icon="cursor-default-click" style={[styles.value, { color: '#0645AD', fontWeight: 900, textDecorationLine: 'underline', fontStyle: 'italic' }]}>
-                                <Icon name="arrow-right" size={18} color="#0645AD" />
-                                <Text>  </Text>
+                            <Icon name="arrow-right" size={18} color="#0645AD" /> 
+                            <Text>  </Text>
                                 {edlData[0].stockout}
                             </Text>
                         </View>
@@ -206,48 +273,57 @@ const StockOut = ({ navigation }) => {
                             <Text style={styles.value}>{edlData[0].stockoutper} %</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Stock in Concern Warehouse:</Text>
+                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Available in Concern WH:</Text>
                             <Text style={styles.value}>{edlData[0].stockinwh}</Text>
                         </View>
                     </View>
                 </View> :
                 <Text></Text>
-                //   (showButtonClicked && !edlDataLoaded) ?
-                //   <Text>No Records Found</Text> : null
-            }
+            
+            } */}
 
-            {nonEdlData.length > 0 ?
+            {/* {nonEdlData.length > 0 ?
                 <View style={styles.card}>
                     <View style={styles.cardContent}>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>Total No Non EDL(Approved By CMHO):</Text>
+                            <Text style={styles.label}>Total No EDL(Approved By CMHO):</Text>
                             <Text style={styles.value}>{nonEdlData[0].totalnos}</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of Stock Out on Above :</Text>
-                            <Text onPress={() => navigateFunction()} icon="cursor-default-click" style={[styles.value, { color: '#0645AD', fontWeight: 900, textDecorationLine: 'underline', fontStyle: 'italic' }]}>
-                            <Icon name="arrow-right" size={10} color="#0645AD" />
-                                {nonEdlData[0].stockout}
-                              
-                            </Text>
-                            {/* <Text onPress={() => navigateFunction()} style={styles.value}>{nonEdlData[0].stockout}</Text> */}
-                          
+                            <Text style={styles.label}>Stock Out:</Text>
+                            <Text onPress={() => navigateFunction()} style={styles.value}>{nonEdlData[0].stockout}</Text>
                         </View>
                         <View style={styles.cardItem}>
                             <Text style={styles.label}>Stock Out %:</Text>
                             <Text style={styles.value}>{nonEdlData[0].stockoutper} %</Text>
                         </View>
                         <View style={styles.cardItem}>
-                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Stock in Concern Warehouse:</Text>
+                            <Text style={styles.label}>No of {drpdwnValue[value - 1]} Available in Concern WH:</Text>
                             <Text style={styles.value}>{nonEdlData[0].stockinwh}</Text>
                         </View>
                     </View>
                 </View> :
                 <Text></Text>
-                //   (showButtonClicked && !nonEdlDataLoaded) ?
-                //   <Text>No Records Found</Text> : null
-            }
+               
+            } */}
+            <View style={styles.header}>
 
+                <Text style={styles.headerText}>SN</Text>
+                <Text style={styles.headerText}>Code</Text>
+                <Text style={styles.headerText}>Item</Text>
+                <Text style={styles.headerText}>Stock</Text>
+                <Text style={styles.headerText}>Annul Indent</Text>
+                <Text style={styles.headerText}>3 Month QTY</Text>
+                {/* <Text style={styles.headerText}>Warehouse Name</Text> */}
+            </View>
+            <FlatList
+                data={data}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={renderItem}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            />
 
         </View>
     );
@@ -294,7 +370,7 @@ const styles = StyleSheet.create({
     headerText: {
         flex: 1,
         fontWeight: 'bold',
-        textAlign: 'center',
+        textAlign: 'left',
     },
     row: {
         flexDirection: 'row',
@@ -341,6 +417,9 @@ const styles = StyleSheet.create({
     label: {
         fontWeight: 'bold',
     },
+    buttonLabel: {
+        color: "#FFFFFF",
+    },
     cardItemRow: {
         flexDirection: 'row',
         // alignItems: 'center',
@@ -367,4 +446,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default StockOut;
+export default IndentAlert;

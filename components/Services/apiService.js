@@ -177,7 +177,7 @@ export const fetchFacilityIssueNo = async (facilityId) => {
   try {
 
     const response = await api.get(`/CGMSCStock/getGeneratedIssueNo?facId=${facilityId}`);
-    alert(JSON.stringify(response.data));
+    //alert(JSON.stringify(response.data));
     //console(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
@@ -294,8 +294,8 @@ export const deleteWardIssues = async (issueId) => {
 
 
 export const postReceiptMaster = async (receiptData, facid) => {
-  alert(JSON.stringify(receiptData));
-  console.log(JSON.stringify(receiptData));
+  //alert(JSON.stringify(receiptData));
+  //console.log(JSON.stringify(receiptData));
   try {  
     const response = await api.post(`/CGMSCStock/postReceiptMaster?facid=${facid}`, receiptData);
     //alert(JSON.stringify(response.data));
@@ -345,6 +345,7 @@ export const fetchReceiptDetails = async (receipttype,facid,facReceiptid) => {
 
 export const fetchReceiptItemsDetail = async (faclityId,FACRECEIPTID,IndentID,inwno) => {
   try {   
+    //alert("inside fetchReceiptItemsDetail");
     const response = await api.get(`/CGMSCStock/getReceiptItemsDetail?faclityId=${faclityId}&FACRECEIPTID=${FACRECEIPTID}&IndentID=${IndentID}&inwno=${inwno}`);
     //alert("Response: " + JSON.stringify(response.data));
     return response.data;
@@ -525,11 +526,132 @@ export const fetchFacilityAvailableItem = async (facilityId) => {
   }
 };
 
+export const fetchfacIndentAlert = async (faclityId,Mcatid,isEDL) => {
+  try {   
+    
+    //alert("before api");
+    const response = await api.get(`/CGMSCStock/FacIndentAlert?facid=${faclityId}&mcatid=${Mcatid}&isEDL=${isEDL}&itemid=0`);
+   // alert("Response from IndentAlert: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+// Indent to wh works
+export const fetchIndenttoWH = async (facilityid,istatus) => {
+  try {   
+    const response = await api.get(`/CGMSCStock/FacMonthIndent?facid=${facilityid}&istatus=${istatus}`);
+    //alert("Response from indent to wh: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
+export const fetchFacMonthIndentItems = async (facilityid,Mcatid,indendid) => {
+  try {
+   // alert("inside api fetchFacMonthIndentItemsData");
+    const response = await api.get(`/CGMSCStock/getFacMonthIndentItems?faclityId=${facilityid}&Mcatid=${Mcatid}&indendid=${indendid}`);
+    //alert("Response from fetchFacMonthIndentItems: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
+export const fetchfacIndentAlert1 = async (faclityId,Mcatid,isEDL,itemid) => {
+  try {   
+    
+    //alert("before api");
+    const response = await api.get(`/CGMSCStock/FacIndentAlert?facid=${faclityId}&mcatid=${Mcatid}&isEDL=${isEDL}&itemid=${itemid}`);
+    //alert("Response from fetchfacIndentAlert1: " + JSON.stringify(response.data));
+    console.log("Response from fetchfacIndentAlert1: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
+
+export const postNOCitems = async (NOCitemData) => {
+  try {  
+    const response = await api.post(`/CGMSCStock/postNOCitems`, NOCitemData);
+    if (response.status === 200) {
+      console.log("Response from postNOCitems: " + JSON.stringify(response.data));
+      return response.data;
+    } else {
+      throw new Error("Failed to post NOC items");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchSavedFacIndentItems = async (noc_id) => {
+  try {   
+    
+    //alert("before call indie api service" + noc_id);
+    const response = await api.get(`/CGMSCStock/getSavedFacIndentItems?nocid=${noc_id}`);
+    //alert("Response from fetchSavedFacIndentItems: " + JSON.stringify(response.data));
+    console.log("Response from fetchSavedFacIndentItems: " + JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCgmscNOCitemsALL = async (nocid) => {
+  try {
+    //alert("before" + issueItemId)
+    const response = await api.delete(`/CGMSCStock/deleteCgmscNOCitemsALL?nocid=${nocid}`);
+   // alert("after : " + JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const completemascgmscnoc = async (nocid) => {
+  try {
+    //lert("before completemascgmscnoc" + nocid)
+    const response = await api.put(`/CGMSCStock/completemascgmscnoc?nocid=${nocid}`);
+    //alert("after : " + JSON.stringify(response.data));
+    //console(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchMonthIndentProgram = async () => {
+  try {
+    //console.log("facilityId: " + facilityId + "itemid: " + "iType: " + iType);
+    const response = await api.get(`/CGMSCStock/getMonthIndentProgram`);
+    //console.log(JSON.stringify(response.data));
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const postWhIndentNo = async (facid, indentDt, programid) => {
+  try {  
+    const response = await api.post(`/CGMSCStock/postWhIndentNo?facid=${facid}&indentDt=${indentDt}&programid=${programid}`);
+    if (response.status === 200) {
+      console.log("after postWhIndentNo execute : " + JSON.stringify(response.data));
+      return response.data;
+    } else {
+      throw new Error("Failed to post ward issue");
+    }
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 

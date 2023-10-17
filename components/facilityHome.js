@@ -13,6 +13,7 @@ import {
 import StockReportFacility from './stockReportFacility';
 
 import { Logout } from './logout';
+
 import IncompleteWardIssue from './FacilityOperation/IncompleteWardIssue';
 import NewWardIssue from './FacilityOperation/NewWardIssue';
 import AddWardIssueMaster from './FacilityOperation/AddWardIssueMaster';
@@ -27,13 +28,18 @@ import IssueItemsAgainstIndent from './FacilityOperation/IssueItemsAgainstIndent
 import WHReceiptItems from './FacilityOperation/WHReceiptItems';
 import WelcomeView from './WelcomeView';
 import StockOut from './StockRPT/StockOut';
+import IndentAlert from './StockRPT/IndentAlert';
 import StockOutDrillDown from './StockRPT/StockOutDrillDown';
 import FacilitySupplyChain from './StockRPT/FacilitySupplyChain';
+import IncompleteWHIndent from './FacilityOperation/IncompleteWHIndent';
+import IncompleteWHIndentChild from './FacilityOperation/IncompleteWHIndentChild';
+import GenerateWarehouseIndent from './FacilityOperation/GenerateWarehouseIndent';
 
 function Feed({ navigation }) {
   const informaitonAboutUser = useSelector((state) => state.user);
   const theme = useTheme();
-
+  //const isAyush = informaitonAboutUser.whaipermission
+  const isAyush = 'N';
   return (
 
 
@@ -63,7 +69,7 @@ function Feed({ navigation }) {
 function Notifications() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications Screen gyan</Text>
+      <Text>Notifications Screen</Text>
     </View>
   );
 }
@@ -87,6 +93,11 @@ function CustomDrawerContent(props) {
 const Drawer = createDrawerNavigator();
 
 export function MyDrawer() {
+
+  const informaitonAboutUser = useSelector((state) => state.user);  
+  const isayushVisible = informaitonAboutUser.whaipermission === 'Y';
+
+
   return (
     <Drawer.Navigator
       useLegacyImplementation
@@ -99,10 +110,24 @@ export function MyDrawer() {
       <Drawer.Screen name="Hold Stock" component={HoldStockRPT} />
       <Drawer.Screen name="Near Exp Stock" component={NearExpStockRPT} />
       <Drawer.Screen name="Stock Out" component={StockOut} />
+
+      {isayushVisible && (
+        <Drawer.Screen name="Indent Alert" component={IndentAlert} />
+      )}
+
+
       <Drawer.Screen name="Transaction Report" component={FacilitySupplyChain} />
       <Drawer.Screen name="Ward Issue" component={IncompleteWardIssue} />
       <Drawer.Screen name="Ward Issue Against Indent" component={IncompleteT4Indent} />
-      <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />
+
+      {isayushVisible && (
+        <Drawer.Screen name="Indent to Warehouse" component={IncompleteWHIndent} />
+      )}
+
+
+      {isayushVisible && (
+        <Drawer.Screen name="Receipt From Warehouse" component={WHReceiptMaster} />
+      )}
 
       <Drawer.Screen name="AddWardIssueMaster" component={AddWardIssueMaster} options={{
         drawerItemStyle: { display: 'none' }
@@ -116,7 +141,13 @@ export function MyDrawer() {
       <Drawer.Screen name="Add New Receipt" component={WHReceiptItems} options={{
         drawerItemStyle: { display: 'none' }
       }} />
-       <Drawer.Screen name="Stock Out Detail" component={StockOutDrillDown} options={{
+      <Drawer.Screen name="Stock Out Detail" component={StockOutDrillDown} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
+      <Drawer.Screen name="Warehouse Indent" component={IncompleteWHIndentChild} options={{
+        drawerItemStyle: { display: 'none' }
+      }} />
+      <Drawer.Screen name="Add New Indent" component={GenerateWarehouseIndent} options={{
         drawerItemStyle: { display: 'none' }
       }} />
 

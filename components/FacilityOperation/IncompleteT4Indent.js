@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ScrollView, RefreshControl } from 'react-native';
 import { useSelector } from 'react-redux';
 import { fetchIncomplWardIndentMaster, postIssueNoAgainstIndent } from '../Services/apiService';
 import { TouchableOpacity } from 'react-native';
@@ -7,6 +7,7 @@ import { Modal, Portal, Button, PaperProvider, TextInput } from 'react-native-pa
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Toast from 'react-native-root-toast';
+
 //import IssueItemsAgainstIndent from './IssueItemsAgainstIndent';
 
 
@@ -30,6 +31,7 @@ const IncompleteT4Indent = ({ navigation }) => {
   //const [dateText, setDateText] = useState('Empty');
 
   const [text, setText] = React.useState("");
+  const [refreshing, setRefreshing] = React.useState(false);
 
 
   const issueData = {
@@ -79,7 +81,13 @@ const IncompleteT4Indent = ({ navigation }) => {
 
 
 
-
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
 
   const fetchData = async () => {
@@ -159,7 +167,7 @@ const IncompleteT4Indent = ({ navigation }) => {
       </View> */}
 
       <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.dstatus}</Text>
+        <Text onPress={() => navigateFunction(item)} style={styles.cellText}><Icon name="arrow-right" size={10} color="#0645AD" /></Text>
       </View>
 
     </View>
@@ -178,11 +186,11 @@ const IncompleteT4Indent = ({ navigation }) => {
       //navigate  and show only indented items in ddl and not more than indented qty
     }
     else {
-    
+
 
       //setVisible(false);
       // const dataToPass = returnDataFrompostIssueNoAgainstIndent.result.value[0];
-     // alert("date to pass: " + JSON.stringify(item));
+      // alert("date to pass: " + JSON.stringify(item));
       navigation.navigate('IssueItemsAgainstIndent', { item: item });
 
       //navigate directly and show only indented items in ddl and not more than indented qty
@@ -244,12 +252,15 @@ const IncompleteT4Indent = ({ navigation }) => {
               {/* <Text style={styles.headerText}>Indent Id</Text> */}
               <Text style={styles.headerText}>Indent Date</Text>
               <Text style={styles.headerText}>Indented Items</Text>
-              <Text style={styles.headerText}>Status</Text>
+              <Text style={styles.headerText}>Action</Text>
             </View>
             <FlatList
               data={data}
               keyExtractor={(_, index) => index.toString()}
               renderItem={renderItem}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
             />
           </View>
 

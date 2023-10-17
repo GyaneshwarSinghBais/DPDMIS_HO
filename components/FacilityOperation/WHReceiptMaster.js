@@ -135,15 +135,9 @@ const WHReceiptMaster = ({ navigation }) => {
         <Text style={styles.cellText}>{item.facreceiptdate}</Text>
       </View>
       <View style={styles.cell}>
-        <Text onPress={() => navigateFunction(item)} style={styles.cellText}>{item.rstatus}</Text>
+        <Text onPress={() => navigateFunction(item)} style={styles.cellText}><Icon name="arrow-right" size={10} color="#0645AD" /></Text>
       </View>
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.warehouseid}</Text>
-      </View>
-
-      <View style={styles.cell}>
-        <Text style={styles.cellText}>{item.indentid}</Text>
-      </View>
+      
 
       {/* <Text style={styles.headerText}>SN</Text>
               <Text style={styles.headerText}>Indented DT</Text>
@@ -246,9 +240,8 @@ const WHReceiptMaster = ({ navigation }) => {
               <Text style={styles.headerText}>Ind./Issued</Text>
               <Text style={styles.headerText}>WH DT</Text>
               <Text style={styles.headerText}>Rec.DT</Text>
-              <Text style={styles.headerText}>Rec. Status</Text>
-              <Text style={styles.headerText}>Wid</Text>
-              <Text style={styles.headerText}>Indentid</Text>
+              <Text style={styles.headerText}>Action</Text>
+          
             </View>
             <FlatList
               data={data}
